@@ -15,6 +15,7 @@ import jakarta.persistence.Table;
     private String frontContent;
     private String backContent;
     private Integer orderIndex;
+    
     public Long getId() {
         return id;
     }
