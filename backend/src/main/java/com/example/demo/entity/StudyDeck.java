@@ -1,6 +1,8 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 
 @Entity
 @Table(name = "study_decks")
@@ -10,12 +12,15 @@ public class StudyDeck {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank
     private String title;
 
     private String description;
 
+    @Positive
     private Integer capacity;
 
+    @NotBlank
     private String mentorName;
 
     private Long ownerId;
@@ -80,5 +85,4 @@ public class StudyDeck {
     public void setOwnerId(Long ownerId) {
         this.ownerId = ownerId;
     }
-
 }
