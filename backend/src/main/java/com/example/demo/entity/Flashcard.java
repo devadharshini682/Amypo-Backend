@@ -5,14 +5,15 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "flashcard")
 public class Flashcard {
-    
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String frontContent;
 
+    @Column(nullable = false)
     private String backContent;
 
     private Integer orderIndex;
@@ -22,15 +23,6 @@ public class Flashcard {
     private StudyDeck deck;
 
     public Flashcard() {
-    }
-
-    public Flashcard(Long id, String frontContent, String backContent,
-                     Integer orderIndex, StudyDeck deck) {
-        this.id = id;
-        this.frontContent = frontContent;
-        this.backContent = backContent;
-        this.orderIndex = orderIndex;
-        this.deck = deck;
     }
 
     public Long getId() {
@@ -72,4 +64,5 @@ public class Flashcard {
     public void setDeck(StudyDeck deck) {
         this.deck = deck;
     }
+
 }
