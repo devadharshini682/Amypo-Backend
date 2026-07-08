@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "retention_metric")
 public class RetentionMetric {
+    
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
