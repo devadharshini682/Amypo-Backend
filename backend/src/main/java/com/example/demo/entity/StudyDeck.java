@@ -1,30 +1,31 @@
 package com.example.demo.entity;
 
+import java.util.List;
+
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Positive;
 
 @Entity
 @Table(name = "study_decks")
 public class StudyDeck {
-    
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
+    @Column(nullable = false)
     private String title;
 
     private String description;
 
-    @Positive
     private Integer capacity;
 
-    @NotBlank
+    @Column(nullable = false)
     private String mentorName;
 
     private Long ownerId;
+
+    @OneToMany(mappedBy = "deck", cascade = CascadeType.ALL)
+    private List<Flashcard> flashcards;
 
     public StudyDeck() {
     }
@@ -86,4 +87,13 @@ public class StudyDeck {
     public void setOwnerId(Long ownerId) {
         this.ownerId = ownerId;
     }
+
+    public List<Flashcard> getFlashcards() {
+        return flashcards;
+    }
+
+    public void setFlashcards(List<Flashcard> flashcards) {
+        this.flashcards = flashcards;
+    }
+
 }
