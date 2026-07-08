@@ -7,6 +7,8 @@ import jakarta.validation.constraints.Positive;
 @Entity
 @Table(name = "study_decks")
 public class StudyDeck {
+    @OneToMany(mappedBy = "deck")
+private List<Flashcard> flashcards;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
