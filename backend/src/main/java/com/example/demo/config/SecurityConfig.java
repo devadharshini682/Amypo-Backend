@@ -1,6 +1,5 @@
 package com.example.demo.config;
 
-import com.example.demo.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -36,18 +35,28 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(
             AuthenticationConfiguration configuration) throws Exception {
+
         return configuration.getAuthenticationManager();
     }
 
-    // Required for CORS test
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
 
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+        configuration.setAllowedOrigins(
+                List.of("http://localhost:3000"));
+
+        configuration.setAllowedMethods(
+                List.of("GET",
+                        "POST",
+                        "PUT",
+                        "DELETE",
+                        "OPTIONS"));
+
         configuration.setAllowedHeaders(List.of("*"));
+
+        configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source =
                 new UrlBasedCorsConfigurationSource();
@@ -61,20 +70,32 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http)
             throws Exception {
 
-        http.csrf(csrf -> csrf.disable());
+        http
+                .csrf(csrf -> csrf.disable())
 
-        http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
+                .cors(cors ->
+                        cors.configurationSource(corsConfigurationSource()))
 
-        http.sessionManagement(session ->
-                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(
+                                SessionCreationPolicy.STATELESS))
 
-        http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/decks/**").hasAnyRole("LINGUIST", "ADMIN")
-                .anyRequest().authenticated());
+                .authorizeHttpRequests(auth -> auth
 
-        http.addFilterBefore(jwtAuthenticationFilter,
-                UsernamePasswordAuthenticationFilter.class);
+                        .requestMatchers("/api/auth/**")
+                        .permitAll()
+
+                        .requestMatchers("/api/decks/**")
+                        .hasAnyRole("LINGUIST", "ADMIN")
+
+                        .requestMatchers("/api/study/**")
+                        .authenticated()
+
+                        .anyRequest()
+                        .authenticated())
+
+                .addFilterBefore(jwtAuthenticationFilter,
+                        UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
