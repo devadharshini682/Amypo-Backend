@@ -14,7 +14,7 @@ public interface StudyDeckRepository extends JpaRepository<StudyDeck, Long> {
 
     List<StudyDeck> findByTitleContainingIgnoreCase(String title);
 
-    @Query("SELECT d FROM StudyDeck d WHERE d.mentorName = ?1")
-    List<StudyDeck> findByMentorNameUsingQuery(String mentorName);
+    @Query("SELECT d FROM StudyDeck d")
+    List<StudyDeck> getAllStudyDecks();
 
 }
