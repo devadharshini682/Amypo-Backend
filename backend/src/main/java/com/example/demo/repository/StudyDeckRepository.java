@@ -15,7 +15,7 @@ public interface StudyDeckRepository extends JpaRepository<StudyDeck, Long> {
 
     List<StudyDeck> findByTitleContainingIgnoreCase(String title);
 
-    @Query("SELECT d FROM StudyDeck d WHERE d.capacity > :capacity")
-    List<StudyDeck> findDecksWithCapacityGreaterThan(
-            @Param("capacity") Integer capacity);
+    @Query("SELECT d FROM StudyDeck d WHERE d.title = :title")
+    List<StudyDeck> findByTitleQuery(@Param("title") String title);
+
 }
