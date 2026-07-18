@@ -1,4 +1,5 @@
 package com.example.demo.entity;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -6,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "study_deck")
+@Table(name = "study_decks")   // <-- changed from study_deck
 public class StudyDeck {
 
     @Id
@@ -38,8 +39,7 @@ public class StudyDeck {
     @OneToMany(mappedBy = "studyDeck", cascade = CascadeType.ALL)
     private List<StudySession> studySessions = new ArrayList<>();
 
-    public StudyDeck() {
-    }
+    public StudyDeck() {}
 
     public Long getId() {
         return id;
