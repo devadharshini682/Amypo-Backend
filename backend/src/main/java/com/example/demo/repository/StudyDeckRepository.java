@@ -17,4 +17,7 @@ public interface StudyDeckRepository extends JpaRepository<StudyDeck, Long> {
     @Query("SELECT d FROM StudyDeck d")
     List<StudyDeck> getAllStudyDecks();
 
+    @Query("SELECT d FROM StudyDeck d WHERE d.mentorName = ?1")
+    List<StudyDeck> findDecksByMentor(String mentorName);
+
 }
