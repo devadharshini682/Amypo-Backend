@@ -112,22 +112,16 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final PasswordEncoder passwordEncoder;
 
 
-    public SecurityConfig(
-            JwtAuthenticationFilter jwtAuthenticationFilter,
-            PasswordEncoder passwordEncoder) {
-
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-        this.passwordEncoder = passwordEncoder;
     }
 
 
@@ -148,28 +142,21 @@ public class SecurityConfig {
 
             .authorizeHttpRequests(auth -> auth
 
-                // Authentication endpoints
                 .requestMatchers(
                     "/api/auth/register",
                     "/api/auth/login"
                 ).permitAll()
 
-
-                // Deck access
                 .requestMatchers("/api/decks/**")
                 .hasAnyRole("LINGUIST", "ADMIN")
 
-
-                // Everything else requires login
                 .anyRequest().authenticated()
             )
-
 
             .addFilterBefore(
                 jwtAuthenticationFilter,
                 UsernamePasswordAuthenticationFilter.class
             );
-
 
         return http.build();
     }
