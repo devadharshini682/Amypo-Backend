@@ -110,6 +110,7 @@ public class SecurityConfig {
                                 "/api/auth/**",
                                 "/api/decks/**",
                                 "/api/languages/**",
+                                "/api/study/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/v3/api-docs/**",
