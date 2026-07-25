@@ -62,47 +62,69 @@ import com.example.demo.dto.AuthResponseDto;
 import com.example.demo.dto.RegisterDto;
 import com.example.demo.entity.SystemUser;
 import com.example.demo.repository.SystemUserRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+
 @Service
 public class AuthService {
+
 
     @Autowired
     private SystemUserRepository systemUserRepository;
 
+
     @Autowired
     private PasswordEncoder passwordEncoder;
+
 
     @Autowired
     private JwtService jwtService;
 
+
+
+    // REGISTER USER
     public AuthResponseDto register(RegisterDto dto) {
 
-        // Check if username already exists
+
         if (systemUserRepository.existsByUsername(dto.getUsername())) {
+
             throw new IllegalStateException("Username already exists.");
+
         }
 
-        // Create new user
+
         SystemUser user = new SystemUser();
+
+
         user.setUsername(dto.getUsername());
 
-        // Save email
         user.setEmail(dto.getEmail());
 
-        // Encrypt password
-        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        user.setPassword(
+                passwordEncoder.encode(dto.getPassword())
+        );
 
-        // Save role
-        user.setRole(SystemUser.Role.valueOf(dto.getRole().toUpperCase()));
 
-        // Save user to database
+        user.setRole(
+                SystemUser.Role.valueOf(
+                        dto.getRole().toUpperCase()
+                )
+        );
+
+
         systemUserRepository.save(user);
 
-        // Generate JWT token
-        String token = jwtService.generateToken(user.getUsername());
+
+
+        // JWT token with role
+        String token = jwtService.generateToken(
+                user.getUsername(),
+                user.getRole().name()
+        );
+
 
         return new AuthResponseDto(
                 token,
@@ -111,17 +133,42 @@ public class AuthService {
         );
     }
 
+
+
+
+    // LOGIN USER
     public AuthResponseDto login(AuthRequestDto dto) {
 
-        SystemUser user = systemUserRepository.findByUsername(dto.getUsername())
-                .orElseThrow(() ->
-                        new IllegalStateException("Invalid username or password."));
 
-        if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
-            throw new IllegalStateException("Invalid username or password.");
+        SystemUser user =
+                systemUserRepository.findByUsername(dto.getUsername())
+                        .orElseThrow(
+                                () -> new IllegalStateException(
+                                        "Invalid username or password."
+                                )
+                        );
+
+
+
+        if (!passwordEncoder.matches(
+                dto.getPassword(),
+                user.getPassword()
+        )) {
+
+            throw new IllegalStateException(
+                    "Invalid username or password."
+            );
         }
 
-        String token = jwtService.generateToken(user.getUsername());
+
+
+        // JWT token with role
+        String token = jwtService.generateToken(
+                user.getUsername(),
+                user.getRole().name()
+        );
+
+
 
         return new AuthResponseDto(
                 token,
@@ -129,4 +176,5 @@ public class AuthService {
                 user.getRole().name()
         );
     }
+
 }
