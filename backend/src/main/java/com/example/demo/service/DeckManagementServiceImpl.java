@@ -72,18 +72,21 @@ import java.util.List;
 @Service
 public class DeckManagementServiceImpl implements DeckManagementService {
 
+
     @Autowired
     private StudyDeckRepository studyDeckRepository;
 
 
     @Override
     public List<StudyDeck> getAllDecks() {
+
         return studyDeckRepository.findAll();
     }
 
 
     @Override
     public StudyDeck getDeckById(Long id) {
+
         return studyDeckRepository.findById(id)
                 .orElse(null);
     }
@@ -92,11 +95,14 @@ public class DeckManagementServiceImpl implements DeckManagementService {
     @Override
     public StudyDeck createDeck(DeckRequestDto dto) {
 
+
         StudyDeck deck = new StudyDeck();
 
         deck.setTitle(dto.getTitle());
         deck.setDescription(dto.getDescription());
         deck.setMentorName(dto.getMentorName());
+        deck.setCapacity(dto.getCapacity());
+
 
         return studyDeckRepository.save(deck);
     }
@@ -105,17 +111,21 @@ public class DeckManagementServiceImpl implements DeckManagementService {
     @Override
     public StudyDeck updateDeck(Long id, DeckRequestDto dto) {
 
+
         StudyDeck deck = studyDeckRepository.findById(id)
                 .orElse(null);
+
 
         if (deck != null) {
 
             deck.setTitle(dto.getTitle());
             deck.setDescription(dto.getDescription());
             deck.setMentorName(dto.getMentorName());
+            deck.setCapacity(dto.getCapacity());
 
             return studyDeckRepository.save(deck);
         }
+
 
         return null;
     }

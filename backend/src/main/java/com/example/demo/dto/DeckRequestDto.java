@@ -1,7 +1,9 @@
 // 
 package com.example.demo.dto;
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public class DeckRequestDto {
@@ -18,16 +20,22 @@ public class DeckRequestDto {
     @NotBlank(message = "Mentor name is required")
     private String mentorName;
 
+    @NotNull(message = "Capacity is required")
+    @Min(value = 1, message = "Capacity must be at least 1")
+    private Integer capacity;
+
 
     public DeckRequestDto() {
     }
 
 
-    public DeckRequestDto(String title, String language, String description, String mentorName) {
+    public DeckRequestDto(String title, String language, String description,
+                          String mentorName, Integer capacity) {
         this.title = title;
         this.language = language;
         this.description = description;
         this.mentorName = mentorName;
+        this.capacity = capacity;
     }
 
 
@@ -64,5 +72,14 @@ public class DeckRequestDto {
 
     public void setMentorName(String mentorName) {
         this.mentorName = mentorName;
+    }
+
+
+    public Integer getCapacity() {
+        return capacity;
+    }
+
+    public void setCapacity(Integer capacity) {
+        this.capacity = capacity;
     }
 }
