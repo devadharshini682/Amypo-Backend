@@ -76,23 +76,58 @@
 // export default studySlice.reducer;
 import { createSlice } from "@reduxjs/toolkit";
 
+const initialState = {
+    decks: [],
+    cards: [],
+    currentCardIndex: 0,
+    score: 0,
+    loading: false,
+};
+
 const studySlice = createSlice({
     name: "study",
-    initialState: {
-        decks: [],
-        loading: false,
-    },
+
+    initialState,
+
     reducers: {
         setDecks: (state, action) => {
             state.decks = action.payload;
         },
 
+        setCards: (state, action) => {
+            state.cards = action.payload;
+            state.currentCardIndex = 0;
+        },
+
         setLoading: (state, action) => {
             state.loading = action.payload;
+        },
+
+        increaseScore: (state) => {
+            state.score += 1;
+        },
+
+        nextCard: (state) => {
+            if (state.currentCardIndex < state.cards.length - 1) {
+                state.currentCardIndex += 1;
+            }
+        },
+
+        resetStudy: (state) => {
+            state.cards = [];
+            state.currentCardIndex = 0;
+            state.score = 0;
         },
     },
 });
 
-export const { setDecks, setLoading } = studySlice.actions;
+export const {
+    setDecks,
+    setCards,
+    setLoading,
+    increaseScore,
+    nextCard,
+    resetStudy,
+} = studySlice.actions;
 
 export default studySlice.reducer;
