@@ -45,6 +45,7 @@ import DeckDetails from "./components/decks/DeckDetails";
 import CreateDeck from "./components/decks/CreateDeck";
 
 import StudyMode from "./components/study/StudyMode";
+import Navbar from "./components/layout/NavBar";
 
 function ProtectedRoute({
   children,
@@ -69,7 +70,7 @@ function ProtectedRoute({
 function App() {
   return (
     <BrowserRouter>
-      <Navbar />
+      <Navbar/>
 
       <Routes>
         <Route
