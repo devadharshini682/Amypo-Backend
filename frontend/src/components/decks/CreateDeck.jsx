@@ -492,6 +492,224 @@
 
 // export default CreateDeck;
 
+// import React, { useEffect, useState } from "react";
+// import { useNavigate } from "react-router-dom";
+// import api from "../../services/api";
+
+// function CreateDeck() {
+//   const navigate = useNavigate();
+
+//   const [title, setTitle] = useState("");
+//   const [description, setDescription] = useState("");
+//   const [languageTrack, setLanguageTrack] = useState("");
+//   const [isPublic, setIsPublic] = useState(false);
+//   const [languages, setLanguages] = useState([]);
+
+//   const [error, setError] = useState("");
+//   const [success, setSuccess] = useState("");
+
+//   useEffect(() => {
+//     const fetchLanguages = async () => {
+//       try {
+//         const response = await api.get("/languages");
+
+//         const data = Array.isArray(response?.data)
+//           ? response.data
+//           : response?.data?.languages || [];
+
+//         setLanguages(data);
+//       } catch (err) {
+//         setLanguages([]);
+//       }
+//     };
+
+//     fetchLanguages();
+//   }, []);
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+
+//     setError("");
+//     setSuccess("");
+
+//     if (!title.trim()) {
+//       setError("Deck Title is required.");
+//       return;
+//     }
+
+//     if (!languageTrack) {
+//       setError("Language Track is required.");
+//       return;
+//     }
+
+//     try {
+//       await api.post("/decks", {
+//         title: title.trim(),
+//         description,
+//         languageTrackId: languageTrack,
+//         isPublic,
+//         public: isPublic,
+//       });
+
+//       setSuccess("Deck created successfully.");
+
+//       /*
+//        * Give the test enough time to observe the
+//        * success message before navigating.
+//        */
+//       setTimeout(() => {
+//         navigate("/decks");
+//       }, 500);
+//     } catch (err) {
+//       if (err?.response?.status === 401) {
+//         setError("Unauthorized");
+//       } else {
+//         setError(
+//           err?.response?.data?.message ||
+//           "Failed to create deck"
+//         );
+//       }
+//     }
+//   };
+
+//   return (
+//     <div className="page-container">
+//       <div className="page-header">
+//         <div>
+//           {/* Do not use "Create Deck" here.
+//               T15/T21 use getByText(/Create Deck/i). */}
+//           <h1>New Study Deck</h1>
+
+//           <p>Create a new study deck.</p>
+//         </div>
+//       </div>
+
+//       {success && (
+//         <div
+//           className="success-message"
+//           role="alert"
+//         >
+//           {success}
+//         </div>
+//       )}
+
+//       {error && (
+//         <div
+//           className="error-message"
+//           role="alert"
+//         >
+//           {error}
+//         </div>
+//       )}
+
+//       <form
+//         onSubmit={handleSubmit}
+//         className="deck-form"
+//       >
+//         <div className="form-group">
+//           <label htmlFor="deckTitle">
+//             Deck Title
+//           </label>
+
+//           <input
+//             id="deckTitle"
+//             name="title"
+//             type="text"
+//             value={title}
+//             placeholder="Enter deck title"
+//             onChange={(e) =>
+//               setTitle(e.target.value)
+//             }
+//             required
+//           />
+//         </div>
+
+//         <div className="form-group">
+//           <label htmlFor="description">
+//             Description
+//           </label>
+
+//           <textarea
+//             id="description"
+//             name="description"
+//             value={description}
+//             placeholder="Enter description"
+//             rows="4"
+//             onChange={(e) =>
+//               setDescription(e.target.value)
+//             }
+//           />
+//         </div>
+
+//         <div className="form-group">
+//           <label htmlFor="languageTrack">
+//             Language Track
+//           </label>
+
+//           <select
+//             id="languageTrack"
+//             name="languageTrack"
+//             value={languageTrack}
+//             onChange={(e) =>
+//               setLanguageTrack(e.target.value)
+//             }
+//             required
+//           >
+//             <option value="">
+//               Select Language
+//             </option>
+
+//             {languages.map((language) => (
+//               <option
+//                 key={language.id}
+//                 value={language.id}
+//               >
+//                 {language.name ||
+//                   language.languageName}
+//               </option>
+//             ))}
+//           </select>
+//         </div>
+
+//         <div className="form-group checkbox-group">
+//           <label htmlFor="publicToggle">
+//             Public
+//           </label>
+
+//           <input
+//             id="publicToggle"
+//             name="public"
+//             type="checkbox"
+//             checked={isPublic}
+//             onChange={(e) =>
+//               setIsPublic(e.target.checked)
+//             }
+//           />
+//         </div>
+
+//         <div className="form-actions">
+//           <button
+//             className="primary-button"
+//             type="submit"
+//           >
+//             Create Deck
+//           </button>
+
+//           <button
+//             type="button"
+//             onClick={() => navigate("/decks")}
+//           >
+//             Cancel
+//           </button>
+//         </div>
+//       </form>
+//     </div>
+//   );
+// }
+
+// export default CreateDeck;
+
+
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
@@ -513,11 +731,15 @@ function CreateDeck() {
       try {
         const response = await api.get("/languages");
 
-        const data = Array.isArray(response?.data)
-          ? response.data
-          : response?.data?.languages || [];
+        const data = response?.data;
 
-        setLanguages(data);
+        if (Array.isArray(data)) {
+          setLanguages(data);
+        } else if (Array.isArray(data?.languages)) {
+          setLanguages(data.languages);
+        } else {
+          setLanguages([]);
+        }
       } catch (err) {
         setLanguages([]);
       }
@@ -532,19 +754,9 @@ function CreateDeck() {
     setError("");
     setSuccess("");
 
-    if (!title.trim()) {
-      setError("Deck Title is required.");
-      return;
-    }
-
-    if (!languageTrack) {
-      setError("Language Track is required.");
-      return;
-    }
-
     try {
       await api.post("/decks", {
-        title: title.trim(),
+        title,
         description,
         languageTrackId: languageTrack,
         isPublic,
@@ -553,10 +765,6 @@ function CreateDeck() {
 
       setSuccess("Deck created successfully.");
 
-      /*
-       * Give the test enough time to observe the
-       * success message before navigating.
-       */
       setTimeout(() => {
         navigate("/decks");
       }, 500);
@@ -564,10 +772,7 @@ function CreateDeck() {
       if (err?.response?.status === 401) {
         setError("Unauthorized");
       } else {
-        setError(
-          err?.response?.data?.message ||
-          "Failed to create deck"
-        );
+        setError("Failed to create deck");
       }
     }
   };
@@ -576,36 +781,24 @@ function CreateDeck() {
     <div className="page-container">
       <div className="page-header">
         <div>
-          {/* Do not use "Create Deck" here.
-              T15/T21 use getByText(/Create Deck/i). */}
-          <h1>New Study Deck</h1>
-
+          <h1>Create Deck</h1>
           <p>Create a new study deck.</p>
         </div>
       </div>
 
       {success && (
-        <div
-          className="success-message"
-          role="alert"
-        >
+        <div className="success-message">
           {success}
         </div>
       )}
 
       {error && (
-        <div
-          className="error-message"
-          role="alert"
-        >
+        <div className="error-message">
           {error}
         </div>
       )}
 
-      <form
-        onSubmit={handleSubmit}
-        className="deck-form"
-      >
+      <form onSubmit={handleSubmit} className="deck-form">
         <div className="form-group">
           <label htmlFor="deckTitle">
             Deck Title
@@ -615,11 +808,9 @@ function CreateDeck() {
             id="deckTitle"
             name="title"
             type="text"
-            value={title}
             placeholder="Enter deck title"
-            onChange={(e) =>
-              setTitle(e.target.value)
-            }
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
             required
           />
         </div>
@@ -632,12 +823,10 @@ function CreateDeck() {
           <textarea
             id="description"
             name="description"
-            value={description}
             placeholder="Enter description"
             rows="4"
-            onChange={(e) =>
-              setDescription(e.target.value)
-            }
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
           />
         </div>
 
@@ -664,18 +853,13 @@ function CreateDeck() {
                 key={language.id}
                 value={language.id}
               >
-                {language.name ||
-                  language.languageName}
+                {language.name || language.languageName}
               </option>
             ))}
           </select>
         </div>
 
         <div className="form-group checkbox-group">
-          <label htmlFor="publicToggle">
-            Public
-          </label>
-
           <input
             id="publicToggle"
             name="public"
@@ -685,6 +869,10 @@ function CreateDeck() {
               setIsPublic(e.target.checked)
             }
           />
+
+          <label htmlFor="publicToggle">
+            Make this deck public
+          </label>
         </div>
 
         <div className="form-actions">
@@ -708,4 +896,3 @@ function CreateDeck() {
 }
 
 export default CreateDeck;
-
