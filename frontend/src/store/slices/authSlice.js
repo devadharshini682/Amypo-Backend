@@ -248,13 +248,15 @@
 
 // export default authSlice.reducer;
 
-
 import { createSlice } from "@reduxjs/toolkit";
 
+const token = localStorage.getItem("langloop_token");
+const savedUser = localStorage.getItem("langloop_user");
+
 const initialState = {
-  user: null,
-  token: localStorage.getItem("langloop_token"),
-  isAuthenticated: !!localStorage.getItem("langloop_token"),
+  user: savedUser ? JSON.parse(savedUser) : null,
+  token: token || null,
+  isAuthenticated: !!token,
   loading: false,
   error: null,
 };
@@ -265,6 +267,29 @@ const authSlice = createSlice({
   initialState,
 
   reducers: {
+    loginSuccess: (state, action) => {
+      const payload = action.payload || {};
+
+      state.user = payload;
+      state.token = payload.token || null;
+      state.isAuthenticated = true;
+      state.loading = false;
+      state.error = null;
+
+      if (payload.token) {
+        localStorage.setItem("langloop_token", payload.token);
+      }
+
+      if (payload.role) {
+        localStorage.setItem("langloop_role", payload.role);
+      }
+
+      localStorage.setItem(
+        "langloop_user",
+        JSON.stringify(payload)
+      );
+    },
+
     logout: (state) => {
       state.user = null;
       state.token = null;
@@ -280,6 +305,11 @@ const authSlice = createSlice({
     setUser: (state, action) => {
       state.user = action.payload;
       state.isAuthenticated = true;
+
+      localStorage.setItem(
+        "langloop_user",
+        JSON.stringify(action.payload)
+      );
     },
 
     setToken: (state, action) => {
@@ -291,6 +321,8 @@ const authSlice = createSlice({
           "langloop_token",
           action.payload
         );
+      } else {
+        localStorage.removeItem("langloop_token");
       }
     },
   },
@@ -304,27 +336,18 @@ const authSlice = createSlice({
       })
 
       .addCase("auth/login/fulfilled", (state, action) => {
+        const payload = action.payload || {};
+
         state.loading = false;
         state.error = null;
 
-        const payload = action.payload || {};
-
-        /*
-         * The test dispatches:
-         * {
-         *   username: "u",
-         *   role: "LEARNER"
-         * }
-         *
-         * Therefore the payload itself must become
-         * the Redux user object.
-         */
+        // T29: Redux must contain the login payload
         state.user = payload;
-
         state.isAuthenticated = true;
 
         if (payload.token) {
           state.token = payload.token;
+
           localStorage.setItem(
             "langloop_token",
             payload.token
@@ -356,6 +379,7 @@ const authSlice = createSlice({
 });
 
 export const {
+  loginSuccess,
   logout,
   setUser,
   setToken,
