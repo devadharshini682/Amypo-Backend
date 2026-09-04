@@ -139,157 +139,351 @@
 
 // export default DeckList;
 
-import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+// import React, { useEffect, useState } from "react";
+// import { Link, useNavigate } from "react-router-dom";
+// import { useDispatch } from "react-redux";
 
+// import api from "../../services/api";
+// import { setDecks } from "../../store/slices/studySlice";
+
+// function DeckList() {
+//     const dispatch = useDispatch();
+//     const navigate = useNavigate();
+
+//     const [decks, setLocalDecks] = useState([]);
+//     const [searchTerm, setSearchTerm] = useState("");
+//     const [loading, setLoading] = useState(false);
+//     const [error, setError] = useState("");
+//     const [success, setSuccess] = useState("");
+
+//     const loadDecks = async () => {
+//         setLoading(true);
+//         setError("");
+
+//         try {
+//             const response = await api.get();
+
+//             const data = response?.data || [];
+
+//             const deckData = Array.isArray(data)
+//                 ? data
+//                 : data.decks || [];
+
+//             setLocalDecks(deckData);
+//             dispatch(setDecks(deckData));
+//         } catch (err) {
+//             setError("Failed to load decks");
+//             setLocalDecks([]);
+//         } finally {
+//             setLoading(false);
+//         }
+//     };
+
+//     useEffect(() => {
+//         loadDecks();
+//     }, []);
+
+//     const filteredDecks = (decks || []).filter((deck) => {
+//         const title = deck?.title?.toLowerCase() || "";
+
+//         return title.includes(searchTerm.toLowerCase());
+//     });
+
+//     const handleDelete = async (id) => {
+//         try {
+//             await api.delete(id);
+
+//             setLocalDecks((previous) =>
+//                 previous.filter((deck) => deck.id !== id)
+//             );
+
+//             setSuccess("StudyDeck deleted successfully.");
+//         } catch (err) {
+//             setError("Failed to delete deck");
+//         }
+//     };
+
+//     return (
+//         <div className="page-container">
+//             <div className="page-header">
+//                 <div>
+//                     <h1>Study Decks</h1>
+//                     <p>Manage your vocabulary decks.</p>
+//                 </div>
+
+//                 <Link
+//                     to="/decks/create"
+//                     className="primary-button"
+//                 >
+//                     Create Deck
+//                 </Link>
+//             </div>
+
+//             <div className="search-section">
+//                 <input
+//                     type="text"
+//                     placeholder="Search decks"
+//                     value={searchTerm}
+//                     onChange={(e) =>
+//                         setSearchTerm(e.target.value)
+//                     }
+//                 />
+//             </div>
+
+//             {loading && (
+//                 <p>Loading decks...</p>
+//             )}
+
+//             {error && (
+//                 <div className="error-message">
+//                     {error}
+//                 </div>
+//             )}
+
+//             {success && (
+//                 <div className="success-message">
+//                     {success}
+//                 </div>
+//             )}
+
+//             {!loading && filteredDecks.length === 0 && (
+//                 <div className="empty-state">
+//                     No decks found.
+//                 </div>
+//             )}
+
+//             <div className="deck-list">
+//                 {filteredDecks.map((deck) => (
+//                     <div
+//                         className="deck-card"
+//                         key={deck.id}
+//                     >
+//                         <h3>{deck.title}</h3>
+
+//                         {deck.description && (
+//                             <p>{deck.description}</p>
+//                         )}
+
+//                         <div className="deck-actions">
+//                             <button
+//                                 type="button"
+//                                 onClick={() =>
+//                                     navigate(
+//                                         `/decks/edit/${deck.id}`
+//                                     )
+//                                 }
+//                             >
+//                                 Edit
+//                             </button>
+
+//                             <button
+//                                 type="button"
+//                                 onClick={() =>
+//                                     handleDelete(deck.id)
+//                                 }
+//                             >
+//                                 Delete
+//                             </button>
+//                         </div>
+//                     </div>
+//                 ))}
+//             </div>
+//         </div>
+//     );
+// }
+
+// export default DeckList;
+
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import api from "../../services/api";
-import { setDecks } from "../../store/slices/studySlice";
+import { setDecks, setLoading } from "../../store/slices/studySlice";
 
 function DeckList() {
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-    const [decks, setLocalDecks] = useState([]);
-    const [searchTerm, setSearchTerm] = useState("");
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState("");
-    const [success, setSuccess] = useState("");
+  const authUser = useSelector((state) => state.auth?.user);
 
-    const loadDecks = async () => {
-        setLoading(true);
-        setError("");
+  const reduxDecks = useSelector(
+    (state) => state.decks?.items || state.study?.decks || []
+  );
 
-        try {
-            const response = await api.get();
+  const [localDecks, setLocalDecks] = useState(
+    Array.isArray(reduxDecks) ? reduxDecks : []
+  );
 
-            const data = response?.data || [];
+  const [search, setSearch] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
-            const deckData = Array.isArray(data)
-                ? data
-                : data.decks || [];
+  const userRole = authUser?.role;
+  const isLinguist = userRole === "LINGUIST";
 
-            setLocalDecks(deckData);
-            dispatch(setDecks(deckData));
-        } catch (err) {
-            setError("Failed to load decks");
-            setLocalDecks([]);
-        } finally {
-            setLoading(false);
-        }
-    };
+  const loadDecks = async () => {
+    try {
+      setError("");
+      dispatch(setLoading(true));
 
-    useEffect(() => {
-        loadDecks();
-    }, []);
+      const response = await api.get("/decks");
 
-    const filteredDecks = (decks || []).filter((deck) => {
-        const title = deck?.title?.toLowerCase() || "";
+      const data = response?.data;
 
-        return title.includes(searchTerm.toLowerCase());
-    });
+      let deckData = [];
 
-    const handleDelete = async (id) => {
-        try {
-            await api.delete(id);
+      if (Array.isArray(data)) {
+        deckData = data;
+      } else if (Array.isArray(data?.decks)) {
+        deckData = data.decks;
+      } else if (Array.isArray(data?.items)) {
+        deckData = data.items;
+      }
 
-            setLocalDecks((previous) =>
-                previous.filter((deck) => deck.id !== id)
-            );
+      setLocalDecks(deckData);
 
-            setSuccess("StudyDeck deleted successfully.");
-        } catch (err) {
-            setError("Failed to delete deck");
-        }
-    };
+      dispatch(setDecks(deckData));
+    } catch (err) {
+      if (err?.response?.status === 401) {
+        setError("Unauthorized");
+      } else {
+        setError("Failed to load decks");
+      }
 
-    return (
-        <div className="page-container">
-            <div className="page-header">
-                <div>
-                    <h1>Study Decks</h1>
-                    <p>Manage your vocabulary decks.</p>
-                </div>
+      setLocalDecks([]);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
 
-                <Link
-                    to="/decks/create"
-                    className="primary-button"
-                >
-                    Create Deck
-                </Link>
-            </div>
+  useEffect(() => {
+    loadDecks();
 
-            <div className="search-section">
-                <input
-                    type="text"
-                    placeholder="Search decks"
-                    value={searchTerm}
-                    onChange={(e) =>
-                        setSearchTerm(e.target.value)
-                    }
-                />
-            </div>
+    // The test suite verifies that loading happens on mount.
+    // loadDecks intentionally remains outside the dependency array.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-            {loading && (
-                <p>Loading decks...</p>
-            )}
+  const handleDelete = async (id) => {
+    try {
+      setError("");
+      setSuccess("");
 
-            {error && (
-                <div className="error-message">
-                    {error}
-                </div>
-            )}
+      await api.delete(`/decks/${id}`);
 
-            {success && (
-                <div className="success-message">
-                    {success}
-                </div>
-            )}
+      setLocalDecks((current) =>
+        current.filter((deck) => String(deck.id) !== String(id))
+      );
 
-            {!loading && filteredDecks.length === 0 && (
-                <div className="empty-state">
-                    No decks found.
-                </div>
-            )}
+      setSuccess("StudyDeck deleted successfully.");
 
-            <div className="deck-list">
-                {filteredDecks.map((deck) => (
-                    <div
-                        className="deck-card"
-                        key={deck.id}
-                    >
-                        <h3>{deck.title}</h3>
+      // Refresh the Redux list too.
+      const remaining = localDecks.filter(
+        (deck) => String(deck.id) !== String(id)
+      );
 
-                        {deck.description && (
-                            <p>{deck.description}</p>
-                        )}
+      dispatch(setDecks(remaining));
+    } catch (err) {
+      if (err?.response?.status === 401) {
+        setError("Unauthorized");
+      } else {
+        setError("Failed to delete deck");
+      }
+    }
+  };
 
-                        <div className="deck-actions">
-                            <button
-                                type="button"
-                                onClick={() =>
-                                    navigate(
-                                        `/decks/edit/${deck.id}`
-                                    )
-                                }
-                            >
-                                Edit
-                            </button>
+  const filteredDecks = (Array.isArray(localDecks) ? localDecks : []).filter(
+    (deck) => {
+      const title = deck?.title?.toLowerCase() || "";
+      return title.includes(search.toLowerCase());
+    }
+  );
 
-                            <button
-                                type="button"
-                                onClick={() =>
-                                    handleDelete(deck.id)
-                                }
-                            >
-                                Delete
-                            </button>
-                        </div>
-                    </div>
-                ))}
-            </div>
+  return (
+    <div className="page-container">
+      <div className="page-header">
+        <div>
+          <h1>Study Decks</h1>
+          <p>Manage your vocabulary decks.</p>
         </div>
-    );
+
+        {isLinguist && (
+          <Link className="primary-button" to="/decks/create">
+            + Create New Deck
+          </Link>
+        )}
+      </div>
+
+      <div className="search-section">
+        <input
+          type="text"
+          placeholder="Search decks"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </div>
+
+      {success && <div className="success-message">{success}</div>}
+
+      {error && <div className="error-message">{error}</div>}
+
+      {filteredDecks.length === 0 ? (
+        <div className="empty-state">
+          No decks found.
+
+          {isLinguist && (
+            <div>
+              <Link
+                className="primary-button"
+                to="/decks/create"
+              >
+                Create Your First Deck
+              </Link>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="deck-list">
+          {filteredDecks.map((deck) => (
+            <div className="deck-card" key={deck.id}>
+              <h3>{deck.title}</h3>
+
+              {deck.description && (
+                <p>{deck.description}</p>
+              )}
+
+              <div className="deck-actions">
+                <Link
+                  className="secondary-button"
+                  to={`/decks/${deck.id}`}
+                >
+                  View
+                </Link>
+
+                {isLinguist && (
+                  <>
+                    <Link
+                      className="secondary-button"
+                      to={`/decks/${deck.id}/edit`}
+                    >
+                      Edit
+                    </Link>
+
+                    <button
+                      type="button"
+                      className="danger-button"
+                      onClick={() => handleDelete(deck.id)}
+                    >
+                      Delete
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default DeckList;
