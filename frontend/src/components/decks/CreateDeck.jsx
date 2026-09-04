@@ -152,179 +152,342 @@
 
 // export default CreateDeck;
 
+// import React, { useEffect, useState } from "react";
+// import { useNavigate } from "react-router-dom";
+
+// import api from "../../services/api";
+
+// function CreateDeck() {
+//     const navigate = useNavigate();
+
+//     const [title, setTitle] = useState("");
+//     const [description, setDescription] = useState("");
+//     const [languageTrack, setLanguageTrack] = useState("");
+//     const [isPublic, setIsPublic] = useState(false);
+
+//     const [languages, setLanguages] = useState([]);
+//     const [error, setError] = useState("");
+//     const [success, setSuccess] = useState("");
+//     const [loading, setLoading] = useState(false);
+
+//     useEffect(() => {
+//         const loadLanguages = async () => {
+//             try {
+//                 const response = await api.get();
+
+//                 setLanguages(response?.data || []);
+//             } catch (err) {
+//                 setLanguages([]);
+//             }
+//         };
+
+//         loadLanguages();
+//     }, []);
+
+//     const handleSubmit = async (e) => {
+//         e.preventDefault();
+
+//         setError("");
+//         setSuccess("");
+//         setLoading(true);
+
+//         try {
+//             await api.post({
+//                 title,
+//                 description,
+//                 languageTrack,
+//                 public: isPublic,
+//             });
+
+//             setSuccess("StudyDeck created successfully.");
+
+//             setTitle("");
+//             setDescription("");
+//             setLanguageTrack("");
+//             setIsPublic(false);
+
+//         } catch (err) {
+//             setError(
+//                 err?.message ||
+//                 "Failed to create deck"
+//             );
+//         } finally {
+//             setLoading(false);
+//         }
+//     };
+
+//     return (
+//         <div className="page-container">
+//             <div className="form-container">
+//                 <h1>Create Deck</h1>
+
+//                 {error && (
+//                     <div className="error-message">
+//                         {error}
+//                     </div>
+//                 )}
+
+//                 {success && (
+//                     <div className="success-message">
+//                         {success}
+//                     </div>
+//                 )}
+
+//                 <form onSubmit={handleSubmit}>
+//                     <label htmlFor="deckTitle">
+//                         Deck Title
+//                     </label>
+
+//                     <input
+//                         id="deckTitle"
+//                         type="text"
+//                         placeholder="Enter deck title"
+//                         value={title}
+//                         onChange={(e) =>
+//                             setTitle(e.target.value)
+//                         }
+//                         required
+//                     />
+
+//                     <label htmlFor="description">
+//                         Description
+//                     </label>
+
+//                     <textarea
+//                         id="description"
+//                         placeholder="Enter description"
+//                         rows="4"
+//                         value={description}
+//                         onChange={(e) =>
+//                             setDescription(e.target.value)
+//                         }
+//                     />
+
+//                     <label htmlFor="languageTrack">
+//                         Language Track
+//                     </label>
+
+//                     <select
+//                         id="languageTrack"
+//                         value={languageTrack}
+//                         onChange={(e) =>
+//                             setLanguageTrack(e.target.value)
+//                         }
+//                         required
+//                     >
+//                         <option value="">
+//                             Select Language
+//                         </option>
+
+//                         {languages.map((language) => (
+//                             <option
+//                                 key={language.id}
+//                                 value={
+//                                     language.id ||
+//                                     language.name
+//                                 }
+//                             >
+//                                 {language.name}
+//                             </option>
+//                         ))}
+//                     </select>
+
+//                     <label htmlFor="publicToggle">
+//                         Public
+//                     </label>
+
+//                     <input
+//                         id="publicToggle"
+//                         type="checkbox"
+//                         checked={isPublic}
+//                         onChange={(e) =>
+//                             setIsPublic(e.target.checked)
+//                         }
+//                     />
+
+//                     <button
+//                         className="primary-button"
+//                         type="submit"
+//                         disabled={loading}
+//                     >
+//                         {loading
+//                             ? "Creating..."
+//                             : "Create Deck"}
+//                     </button>
+
+//                     <button
+//                         type="button"
+//                         onClick={() => navigate("/decks")}
+//                     >
+//                         Cancel
+//                     </button>
+//                 </form>
+//             </div>
+//         </div>
+//     );
+// }
+
+// export default CreateDeck;
+
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
 import api from "../../services/api";
 
 function CreateDeck() {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    const [title, setTitle] = useState("");
-    const [description, setDescription] = useState("");
-    const [languageTrack, setLanguageTrack] = useState("");
-    const [isPublic, setIsPublic] = useState(false);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [languageTrack, setLanguageTrack] = useState("");
+  const [isPublic, setIsPublic] = useState(false);
+  const [languages, setLanguages] = useState([]);
 
-    const [languages, setLanguages] = useState([]);
-    const [error, setError] = useState("");
-    const [success, setSuccess] = useState("");
-    const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
-    useEffect(() => {
-        const loadLanguages = async () => {
-            try {
-                const response = await api.get();
-
-                setLanguages(response?.data || []);
-            } catch (err) {
-                setLanguages([]);
-            }
-        };
-
-        loadLanguages();
-    }, []);
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        setError("");
-        setSuccess("");
-        setLoading(true);
-
-        try {
-            await api.post({
-                title,
-                description,
-                languageTrack,
-                public: isPublic,
-            });
-
-            setSuccess("StudyDeck created successfully.");
-
-            setTitle("");
-            setDescription("");
-            setLanguageTrack("");
-            setIsPublic(false);
-
-        } catch (err) {
-            setError(
-                err?.message ||
-                "Failed to create deck"
-            );
-        } finally {
-            setLoading(false);
-        }
+  useEffect(() => {
+    const fetchLanguages = async () => {
+      try {
+        const response = await api.get("/languages");
+        setLanguages(response?.data || []);
+      } catch (err) {
+        setLanguages([]);
+      }
     };
 
-    return (
-        <div className="page-container">
-            <div className="form-container">
-                <h1>Create Deck</h1>
+    fetchLanguages();
+  }, []);
 
-                {error && (
-                    <div className="error-message">
-                        {error}
-                    </div>
-                )}
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-                {success && (
-                    <div className="success-message">
-                        {success}
-                    </div>
-                )}
+    setError("");
+    setSuccess("");
 
-                <form onSubmit={handleSubmit}>
-                    <label htmlFor="deckTitle">
-                        Deck Title
-                    </label>
+    try {
+      await api.post("/decks", {
+        title,
+        description,
+        languageTrackId: languageTrack,
+        isPublic,
+        public: isPublic,
+      });
 
-                    <input
-                        id="deckTitle"
-                        type="text"
-                        placeholder="Enter deck title"
-                        value={title}
-                        onChange={(e) =>
-                            setTitle(e.target.value)
-                        }
-                        required
-                    />
+      setSuccess("Deck created successfully.");
 
-                    <label htmlFor="description">
-                        Description
-                    </label>
+      setTimeout(() => {
+        navigate("/decks");
+      }, 500);
+    } catch (err) {
+      if (err?.response?.status === 401) {
+        setError("Unauthorized");
+      } else {
+        setError("Failed to create deck");
+      }
+    }
+  };
 
-                    <textarea
-                        id="description"
-                        placeholder="Enter description"
-                        rows="4"
-                        value={description}
-                        onChange={(e) =>
-                            setDescription(e.target.value)
-                        }
-                    />
-
-                    <label htmlFor="languageTrack">
-                        Language Track
-                    </label>
-
-                    <select
-                        id="languageTrack"
-                        value={languageTrack}
-                        onChange={(e) =>
-                            setLanguageTrack(e.target.value)
-                        }
-                        required
-                    >
-                        <option value="">
-                            Select Language
-                        </option>
-
-                        {languages.map((language) => (
-                            <option
-                                key={language.id}
-                                value={
-                                    language.id ||
-                                    language.name
-                                }
-                            >
-                                {language.name}
-                            </option>
-                        ))}
-                    </select>
-
-                    <label htmlFor="publicToggle">
-                        Public
-                    </label>
-
-                    <input
-                        id="publicToggle"
-                        type="checkbox"
-                        checked={isPublic}
-                        onChange={(e) =>
-                            setIsPublic(e.target.checked)
-                        }
-                    />
-
-                    <button
-                        className="primary-button"
-                        type="submit"
-                        disabled={loading}
-                    >
-                        {loading
-                            ? "Creating..."
-                            : "Create Deck"}
-                    </button>
-
-                    <button
-                        type="button"
-                        onClick={() => navigate("/decks")}
-                    >
-                        Cancel
-                    </button>
-                </form>
-            </div>
+  return (
+    <div className="page-container">
+      <div className="page-header">
+        <div>
+          <h1>Create Deck</h1>
+          <p>Create a new study deck.</p>
         </div>
-    );
+      </div>
+
+      {success && (
+        <div className="success-message">
+          {success}
+        </div>
+      )}
+
+      {error && (
+        <div className="error-message">
+          {error}
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="deck-form">
+        <div className="form-group">
+          <label htmlFor="title">Title</label>
+
+          <input
+            id="title"
+            type="text"
+            value={title}
+            placeholder="Enter deck title"
+            onChange={(e) => setTitle(e.target.value)}
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="description">Description</label>
+
+          <textarea
+            id="description"
+            value={description}
+            placeholder="Enter deck description"
+            onChange={(e) => setDescription(e.target.value)}
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="languageTrack">
+            Language Track
+          </label>
+
+          <select
+            id="languageTrack"
+            value={languageTrack}
+            onChange={(e) => setLanguageTrack(e.target.value)}
+            required
+          >
+            <option value="">Select Language</option>
+
+            {languages.map((language) => (
+              <option
+                key={language.id}
+                value={language.id}
+              >
+                {language.name || language.languageName}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="form-group checkbox-group">
+          <input
+            id="publicToggle"
+            type="checkbox"
+            checked={isPublic}
+            onChange={(e) => setIsPublic(e.target.checked)}
+          />
+
+          <label htmlFor="publicToggle">
+            Make this deck public
+          </label>
+        </div>
+
+        <div className="form-actions">
+          <button
+            className="primary-button"
+            type="submit"
+          >
+            Create Deck
+          </button>
+
+          <button
+            type="button"
+            onClick={() => navigate("/decks")}
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  );
 }
 
 export default CreateDeck;
