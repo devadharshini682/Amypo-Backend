@@ -183,7 +183,6 @@ function Register() {
   const [password, setPassword] = useState("");
   const [nativeLanguage, setNativeLanguage] = useState("");
   const [role, setRole] = useState("");
-
   const [languages, setLanguages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -214,16 +213,13 @@ function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     setError("");
 
-    // Basic validation
     if (!username || !email || !password || !nativeLanguage || !role) {
       setError("Please fill in all fields.");
       return;
     }
 
-    // Backend requires minimum 6 characters
     if (password.length < 6) {
       setError("Password must be at least 6 characters.");
       return;
@@ -241,7 +237,6 @@ function Register() {
       });
 
       alert("Registration successful!");
-
       navigate("/login");
     } catch (err) {
       console.error("Registration failed:", err);
@@ -279,6 +274,7 @@ function Register() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               placeholder="Enter username"
+              required
             />
           </div>
 
@@ -291,6 +287,7 @@ function Register() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter email"
+              required
             />
           </div>
 
@@ -303,6 +300,8 @@ function Register() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Minimum 6 characters"
+              required
+              minLength={6}
             />
           </div>
 
@@ -313,6 +312,7 @@ function Register() {
             <select
               value={nativeLanguage}
               onChange={(e) => setNativeLanguage(e.target.value)}
+              required
             >
               <option value="">Select Native Language</option>
 
@@ -334,6 +334,7 @@ function Register() {
             <select
               value={role}
               onChange={(e) => setRole(e.target.value)}
+              required
             >
               <option value="">Select Role</option>
               <option value="LEARNER">Learner</option>
