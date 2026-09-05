@@ -258,7 +258,7 @@ function Dashboard() {
 
       try {
         // --------------------------------
-        // 1. Get all decks
+        // 1. LOAD TOTAL DECKS
         // --------------------------------
         let totalDecks = 0;
 
@@ -277,16 +277,14 @@ function Dashboard() {
         }
 
         // --------------------------------
-        // 2. Get learning progress
+        // 2. LOAD PROGRESS
         // --------------------------------
         let totalFlashcards = 0;
         let masteredCards = 0;
         let progressPercentage = 0;
 
         try {
-          const progressResponse = await api.get(
-            "/analytics/progress"
-          );
+          const progressResponse = await api.get("/analytics/progress");
 
           console.log(
             "Dashboard - Progress:",
@@ -300,19 +298,22 @@ function Dashboard() {
           progressPercentage =
             progressData.progressPercentage ?? 0;
         } catch (err) {
-          console.error(
-            "Failed to load progress:",
-            err
-          );
+          console.error("Failed to load progress:", err);
         }
 
         // --------------------------------
-        // 3. Get due cards
+        // 3. LOAD DUE CARDS
         // --------------------------------
         let dueCards = 0;
 
         try {
-          const dueResponse = await api.get("/study/due");
+          // Current logged-in user: disha
+          // Database user ID: 10
+          const userId = 10;
+
+          const dueResponse = await api.get(
+            `/study/due?userId=${userId}`
+          );
 
           console.log(
             "Dashboard - Due cards:",
@@ -331,7 +332,6 @@ function Dashboard() {
             dueCards = dueResponse.data.count;
           }
         } catch (err) {
-          // Do not break the entire Dashboard
           console.error(
             "Failed to load due cards:",
             err
@@ -341,7 +341,7 @@ function Dashboard() {
         }
 
         // --------------------------------
-        // 4. Update Dashboard
+        // 4. UPDATE DASHBOARD
         // --------------------------------
         setStats({
           totalDecks,
@@ -352,10 +352,7 @@ function Dashboard() {
           progressPercentage,
         });
       } catch (err) {
-        console.error(
-          "Dashboard error:",
-          err
-        );
+        console.error("Dashboard error:", err);
 
         setError(
           "Unable to load dashboard data."
@@ -368,6 +365,9 @@ function Dashboard() {
     loadDashboard();
   }, []);
 
+  // --------------------------------
+  // LOADING SCREEN
+  // --------------------------------
   if (loading) {
     return (
       <div className="page-container">
@@ -376,10 +376,13 @@ function Dashboard() {
     );
   }
 
+  // --------------------------------
+  // DASHBOARD UI
+  // --------------------------------
   return (
     <div className="page-container">
 
-      {/* Header */}
+      {/* HEADER */}
       <div className="page-header">
         <div>
           <h1>Hello, User!</h1>
@@ -390,16 +393,15 @@ function Dashboard() {
         </div>
       </div>
 
-      {/* Error */}
+      {/* ERROR MESSAGE */}
       {error && (
         <div className="error-message">
           {error}
         </div>
       )}
 
-      {/* Study Card */}
+      {/* STUDY CARD */}
       <div className="study-card">
-
         <h2>Ready to study?</h2>
 
         <p>
@@ -414,10 +416,9 @@ function Dashboard() {
         >
           Start Session
         </Link>
-
       </div>
 
-      {/* Statistics */}
+      {/* STAT CARDS */}
       <div className="stats-grid">
 
         <div className="stat-card">
@@ -447,15 +448,13 @@ function Dashboard() {
 
       </div>
 
-      {/* Learning Progress */}
+      {/* PROGRESS */}
       <div className="progress-section">
-
         <h3>Learning Progress</h3>
 
         <p>
           {stats.progressPercentage}% completed
         </p>
-
       </div>
 
     </div>
