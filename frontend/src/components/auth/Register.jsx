@@ -172,7 +172,7 @@
 
 // export default Register;
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
 
 function Register() {
@@ -182,29 +182,27 @@ function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [nativeLanguage, setNativeLanguage] = useState("");
-  const [role, setRole] = useState("");
-  const [languages, setLanguages] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [role, setRole] = useState("LEARNER");
 
-  // Get languages from backend
+  const [languages, setLanguages] = useState([]);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  // Fetch available languages
   useEffect(() => {
     const fetchLanguages = async () => {
       try {
         const response = await api.get("/languages");
+        const data = response?.data;
 
-        if (Array.isArray(response.data)) {
-          setLanguages(response.data);
-        } else if (Array.isArray(response.data?.data)) {
-          setLanguages(response.data.data);
-        } else if (Array.isArray(response.data?.languages)) {
-          setLanguages(response.data.languages);
+        if (Array.isArray(data)) {
+          setLanguages(data);
         } else {
           setLanguages([]);
         }
       } catch (err) {
         console.error("Failed to fetch languages:", err);
-        setError("Unable to load languages.");
+        setLanguages([]);
       }
     };
 
@@ -213,10 +211,13 @@ function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
 
+    setError("");
+    setSuccess("");
+
+    // Basic validation
     if (!username || !email || !password || !nativeLanguage || !role) {
-      setError("Please fill in all fields.");
+      setError("Please fill in all required fields.");
       return;
     }
 
@@ -226,134 +227,128 @@ function Register() {
     }
 
     try {
-      setLoading(true);
-
       await api.post("/auth/register", {
-        username: username,
-        email: email,
-        password: password,
-        nativeLanguage: nativeLanguage,
-        role: role,
+        username,
+        email,
+        password,
+        nativeLanguage,
+        role,
       });
 
-      alert("Registration successful!");
-      navigate("/login");
+      setSuccess("Registration successful! Redirecting to login...");
+
+      setTimeout(() => {
+        navigate("/login");
+      }, 1000);
     } catch (err) {
       console.error("Registration failed:", err);
 
-      if (err.response?.data?.message) {
-        setError(err.response.data.message);
-      } else if (err.response?.data) {
-        setError(
-          typeof err.response.data === "string"
-            ? err.response.data
-            : "Registration failed. Please check your details."
-        );
-      } else {
-        setError("Registration failed. Please try again.");
-      }
-    } finally {
-      setLoading(false);
+      const message =
+        err?.response?.data?.message ||
+        err?.response?.data ||
+        "Registration failed. Please try again.";
+
+      setError(message);
     }
   };
 
   return (
     <div className="register-container">
-      <div className="register-card">
-        <h2>Register</h2>
+      <h2>Register</h2>
 
-        {error && <div className="error-message">{error}</div>}
+      {error && <div className="error-message">{error}</div>}
 
-        <form onSubmit={handleSubmit}>
-          {/* Username */}
-          <div className="form-group">
-            <label>Username</label>
+      {success && <div className="success-message">{success}</div>}
 
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Enter username"
-              required
-            />
-          </div>
+      <form onSubmit={handleSubmit}>
 
-          {/* Email */}
-          <div className="form-group">
-            <label>Email</label>
+        {/* Username */}
+        <div className="form-group">
+          <label htmlFor="username">Username</label>
 
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter email"
-              required
-            />
-          </div>
+          <input
+            id="username"
+            type="text"
+            placeholder="Enter username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
+        </div>
 
-          {/* Password */}
-          <div className="form-group">
-            <label>Password</label>
+        {/* Email */}
+        <div className="form-group">
+          <label htmlFor="email">Email</label>
 
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Minimum 6 characters"
-              required
-              minLength={6}
-            />
-          </div>
+          <input
+            id="email"
+            type="email"
+            placeholder="Enter email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
 
-          {/* Native Language */}
-          <div className="form-group">
-            <label>Native Language</label>
+        {/* Password */}
+        <div className="form-group">
+          <label htmlFor="password">Password</label>
 
-            <select
-              value={nativeLanguage}
-              onChange={(e) => setNativeLanguage(e.target.value)}
-              required
-            >
-              <option value="">Select Native Language</option>
+          <input
+            id="password"
+            type="password"
+            placeholder="Minimum 6 characters"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            minLength={6}
+            required
+          />
+        </div>
 
-              {languages.map((language) => (
-                <option
-                  key={language.id || language.languageName}
-                  value={language.languageName}
-                >
-                  {language.languageName}
-                </option>
-              ))}
-            </select>
-          </div>
+        {/* Native Language */}
+        <div className="form-group">
+          <label htmlFor="nativeLanguage">Native Language</label>
 
-          {/* Role */}
-          <div className="form-group">
-            <label>Role</label>
+          <select
+            id="nativeLanguage"
+            value={nativeLanguage}
+            onChange={(e) => setNativeLanguage(e.target.value)}
+            required
+          >
+            <option value="">Select language</option>
 
-            <select
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              required
-            >
-              <option value="">Select Role</option>
-              <option value="LEARNER">Learner</option>
-              <option value="LINGUIST">Linguist</option>
-              <option value="ADMIN">Admin</option>
-            </select>
-          </div>
+            {languages.map((language) => (
+              <option
+                key={language.id || language.code || language.name}
+                value={language.name || language.code}
+              >
+                {language.name || language.code}
+              </option>
+            ))}
+          </select>
+        </div>
 
-          {/* Register Button */}
-          <button type="submit" disabled={loading}>
-            {loading ? "Registering..." : "Register"}
-          </button>
-        </form>
+        {/* Role */}
+        <div className="form-group">
+          <label htmlFor="role">Role</label>
 
-        <p>
-          Already have an account?{" "}
-          <Link to="/login">Login</Link>
-        </p>
-      </div>
+          <select
+            id="role"
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+            required
+          >
+            <option value="LEARNER">LEARNER</option>
+            <option value="LINGUIST">LINGUIST</option>
+            <option value="ADMIN">ADMIN</option>
+          </select>
+        </div>
+
+        {/* Submit */}
+        <button type="submit">
+          Register
+        </button>
+      </form>
     </div>
   );
 }
