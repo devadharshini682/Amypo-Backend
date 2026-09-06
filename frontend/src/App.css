@@ -926,3 +926,166 @@
     font-size: 19px;
   }
 }
+/* =================================
+   STUDY MODE PAGE
+   ================================= */
+
+.study-page {
+  width: min(900px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 40px 0 60px;
+}
+
+.study-page h1 {
+  margin: 0 0 8px;
+  color: #111827;
+  font-size: 30px;
+  font-weight: 750;
+}
+
+.study-page > p {
+  margin: 0 0 28px;
+  color: #6b7280;
+  font-size: 15px;
+}
+
+/* Study card */
+
+.study-mode-card {
+  padding: 35px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  box-shadow: 0 7px 25px rgba(15, 23, 42, 0.06);
+}
+
+.study-mode-card h2 {
+  margin: 0 0 20px;
+  color: #111827;
+  font-size: 22px;
+}
+
+/* Question */
+
+.study-question {
+  margin-bottom: 25px;
+  padding: 22px;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+}
+
+.study-question strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #2563eb;
+  font-size: 14px;
+}
+
+.study-question p {
+  margin: 0;
+  color: #111827;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+/* Answer */
+
+.study-answer {
+  margin-bottom: 25px;
+  padding: 22px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 10px;
+}
+
+.study-answer strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #1d4ed8;
+  font-size: 14px;
+}
+
+.study-answer p {
+  margin: 0;
+  color: #374151;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* Buttons */
+
+.study-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.study-actions button {
+  min-width: 120px;
+}
+
+/* Empty state */
+
+.study-empty {
+  padding: 45px 25px;
+  text-align: center;
+  background: #ffffff;
+  border: 1px dashed #d1d5db;
+  border-radius: 14px;
+}
+
+.study-empty h2 {
+  margin: 0 0 8px;
+  color: #374151;
+  font-size: 20px;
+}
+
+.study-empty p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+/* Progress */
+
+.study-progress {
+  margin-bottom: 22px;
+  color: #6b7280;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.study-progress span {
+  color: #2563eb;
+}
+
+/* Mobile */
+
+@media (max-width: 700px) {
+  .study-page {
+    width: min(100% - 24px, 900px);
+    padding-top: 25px;
+  }
+
+  .study-page h1 {
+    font-size: 25px;
+  }
+
+  .study-mode-card {
+    padding: 23px;
+  }
+
+  .study-question p {
+    font-size: 16px;
+  }
+
+  .study-actions {
+    flex-direction: column;
+  }
+
+  .study-actions button {
+    width: 100%;
+  }
+}
