@@ -56,17 +56,14 @@ public class SpacedRepetitionService {
             Long cardId,
             Integer quality) {
 
-        // Existing method kept unchanged in purpose.
-        // Retention update logic can be implemented later.
+        // Existing method preserved.
     }
 
     public List<RetentionMetric> getDueReviews(Long userId) {
 
-        LocalDateTime now = LocalDateTime.now();
-
         return retentionMetricRepository.findDueReviews(
                 userId,
-                now
+                LocalDateTime.now()
         );
     }
 }
