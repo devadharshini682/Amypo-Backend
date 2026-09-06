@@ -729,3 +729,200 @@
     max-width: 100%;
   }
 }
+/* =================================
+   DECK DETAILS PAGE
+   ================================= */
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 20px;
+
+  color: #2563eb;
+  font-size: 14px;
+  font-weight: 600;
+
+  transition: color 0.2s ease;
+}
+
+.back-link:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
+/* =================================
+   DECK DETAIL HEADER
+   ================================= */
+
+.deck-detail-header {
+  margin-bottom: 28px;
+  padding: 28px 30px;
+
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+
+  box-shadow: 0 5px 20px rgba(15, 23, 42, 0.05);
+}
+
+.deck-detail-header h1 {
+  margin: 0 0 10px;
+
+  color: #111827;
+  font-size: 28px;
+  font-weight: 750;
+}
+
+.deck-detail-header p {
+  margin: 6px 0;
+
+  color: #6b7280;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.deck-detail-header strong {
+  color: #374151;
+}
+
+/* =================================
+   FLASHCARD LIST
+   ================================= */
+
+.flashcard-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  margin-bottom: 30px;
+}
+
+.flashcard-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 20px;
+  align-items: center;
+
+  padding: 20px 22px;
+
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+
+  box-shadow: 0 4px 15px rgba(15, 23, 42, 0.04);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.flashcard-row:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 7px 20px rgba(15, 23, 42, 0.07);
+}
+
+.flashcard-row strong {
+  display: block;
+  margin-bottom: 6px;
+
+  color: #374151;
+  font-size: 13px;
+}
+
+.flashcard-row p {
+  margin: 0;
+
+  color: #111827;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* =================================
+   ADD FLASHCARD FORM
+   ================================= */
+
+.form-card {
+  padding: 28px 30px;
+
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+
+  box-shadow: 0 5px 20px rgba(15, 23, 42, 0.05);
+}
+
+.form-card h2 {
+  margin: 0 0 22px;
+
+  color: #111827;
+  font-size: 21px;
+  font-weight: 700;
+}
+
+.form-card form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.form-card textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.form-card label {
+  color: #374151;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.form-card .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.form-card .primary-button {
+  align-self: flex-start;
+}
+
+/* =================================
+   DELETE BUTTON
+   ================================= */
+
+.deck-detail-header .danger-button {
+  margin-top: 15px;
+}
+
+/* =================================
+   DECK DETAILS RESPONSIVE
+   ================================= */
+
+@media (max-width: 800px) {
+  .flashcard-row {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .deck-detail-header {
+    padding: 23px;
+  }
+
+  .form-card {
+    padding: 23px;
+  }
+}
+
+@media (max-width: 500px) {
+  .deck-detail-header h1 {
+    font-size: 24px;
+  }
+
+  .flashcard-row {
+    padding: 17px;
+  }
+
+  .form-card h2 {
+    font-size: 19px;
+  }
+}
