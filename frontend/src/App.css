@@ -1,4 +1,4 @@
-.App {
+/* .App {
   text-align: center;
 }
 
@@ -35,4 +35,158 @@
   to {
     transform: rotate(360deg);
   }
+} */
+
+/* ================================
+   LANGLOOP - GLOBAL APP STYLING
+   ================================ */
+
+.App {
+  min-height: 100vh;
+  background: #f5f7fb;
 }
+
+/* ================================
+   NAVBAR
+   ================================ */
+
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+
+  min-height: 68px;
+  padding: 0 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  background: #111827;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.12);
+}
+
+/* Brand */
+
+.navbar-brand a {
+  display: inline-flex;
+  align-items: center;
+
+  color: #ffffff;
+  font-size: 23px;
+  font-weight: 800;
+  letter-spacing: -0.6px;
+
+  transition: opacity 0.2s ease;
+}
+
+.navbar-brand a:hover {
+  opacity: 0.85;
+}
+
+/* Navigation */
+
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.navbar-links a {
+  position: relative;
+
+  padding: 9px 13px;
+  border-radius: 7px;
+
+  color: #d1d5db;
+  font-size: 14px;
+  font-weight: 550;
+
+  transition:
+    color 0.2s ease,
+    background 0.2s ease;
+}
+
+.navbar-links a:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.navbar-links a:active {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* Logout */
+
+.logout-button {
+  margin-left: 8px;
+
+  padding: 9px 16px;
+
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 7px;
+
+  background: #2563eb;
+  color: #ffffff;
+
+  font-size: 14px;
+  font-weight: 650;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.logout-button:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+  box-shadow: 0 5px 15px rgba(37, 99, 235, 0.25);
+}
+
+.logout-button:active {
+  transform: translateY(0);
+}
+
+/* ================================
+   RESPONSIVE NAVBAR
+   ================================ */
+
+@media (max-width: 800px) {
+  .navbar {
+    padding: 12px 20px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .navbar-brand {
+    display: flex;
+    justify-content: center;
+  }
+
+  .navbar-links {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .logout-button {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 500px) {
+  .navbar-links {
+    gap: 3px;
+  }
+
+  .navbar-links a,
+  .logout-button {
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+}
+
+
