@@ -129,6 +129,127 @@
 // }
 
 // export default App;
+// import React from "react";
+// import {
+//   BrowserRouter,
+//   Navigate,
+//   Route,
+//   Routes,
+// } from "react-router-dom";
+// import { useSelector } from "react-redux";
+
+// import Login from "./components/auth/Login";
+// import Register from "./components/auth/Register";
+// import Dashboard from "./components/dashboard/Dashboard";
+// import DeckList from "./components/decks/DeckList";
+// import DeckDetails from "./components/decks/DeckDetails";
+// import CreateDeck from "./components/decks/CreateDeck";
+// import StudyMode from "./components/study/StudyMode";
+// import Navbar from "./components/layout/NavBar";
+
+
+// function ProtectedRoute({ children }) {
+//   const { isAuthenticated } = useSelector((state) => state.auth);
+
+//   if (!isAuthenticated) {
+//     return <Navigate to="/login" replace />;
+//   }
+
+//   return children;
+// }
+
+
+// function App() {
+//   return (
+//     <BrowserRouter
+//       future={{
+//         v7_startTransition: true,
+//         v7_relativeSplatPath: true,
+//       }}
+//     >
+//       <Navbar />
+
+//       <Routes>
+
+//         {/* Default route */}
+//         <Route
+//           path="/"
+//           element={<Navigate to="/dashboard" replace />}
+//         />
+
+//         {/* Authentication */}
+//         <Route
+//           path="/login"
+//           element={<Login />}
+//         />
+
+//         <Route
+//           path="/register"
+//           element={<Register />}
+//         />
+
+//         {/* Dashboard */}
+//         <Route
+//           path="/dashboard"
+//           element={
+//             <ProtectedRoute>
+//               <Dashboard />
+//             </ProtectedRoute>
+//           }
+//         />
+
+//         {/* Deck List */}
+//         <Route
+//           path="/decks"
+//           element={
+//             <ProtectedRoute>
+//               <DeckList />
+//             </ProtectedRoute>
+//           }
+//         />
+
+//         {/* Create Deck */}
+//         <Route
+//           path="/decks/create"
+//           element={
+//             <ProtectedRoute>
+//               <CreateDeck />
+//             </ProtectedRoute>
+//           }
+//         />
+
+//         {/* Deck Details */}
+//         <Route
+//           path="/decks/:id"
+//           element={
+//             <ProtectedRoute>
+//               <DeckDetails />
+//             </ProtectedRoute>
+//           }
+//         />
+
+//         {/* Study Mode */}
+//         <Route
+//           path="/study"
+//           element={
+//             <ProtectedRoute>
+//               <StudyMode />
+//             </ProtectedRoute>
+//           }
+//         />
+
+//         {/* Unknown URL */}
+//         <Route
+//           path="*"
+//           element={<Navigate to="/dashboard" replace />}
+//         />
+
+//       </Routes>
+//     </BrowserRouter>
+//   );
+// }
+
+// export default App;
 import React from "react";
 import {
   BrowserRouter,
@@ -137,6 +258,8 @@ import {
   Routes,
 } from "react-router-dom";
 import { useSelector } from "react-redux";
+
+import "./App.css";
 
 import Login from "./components/auth/Login";
 import Register from "./components/auth/Register";
@@ -147,7 +270,6 @@ import CreateDeck from "./components/decks/CreateDeck";
 import StudyMode from "./components/study/StudyMode";
 import Navbar from "./components/layout/NavBar";
 
-
 function ProtectedRoute({ children }) {
   const { isAuthenticated } = useSelector((state) => state.auth);
 
@@ -157,7 +279,6 @@ function ProtectedRoute({ children }) {
 
   return children;
 }
-
 
 function App() {
   return (
@@ -170,14 +291,11 @@ function App() {
       <Navbar />
 
       <Routes>
-
-        {/* Default route */}
         <Route
           path="/"
           element={<Navigate to="/dashboard" replace />}
         />
 
-        {/* Authentication */}
         <Route
           path="/login"
           element={<Login />}
@@ -188,7 +306,6 @@ function App() {
           element={<Register />}
         />
 
-        {/* Dashboard */}
         <Route
           path="/dashboard"
           element={
@@ -198,7 +315,6 @@ function App() {
           }
         />
 
-        {/* Deck List */}
         <Route
           path="/decks"
           element={
@@ -208,7 +324,6 @@ function App() {
           }
         />
 
-        {/* Create Deck */}
         <Route
           path="/decks/create"
           element={
@@ -218,7 +333,6 @@ function App() {
           }
         />
 
-        {/* Deck Details */}
         <Route
           path="/decks/:id"
           element={
@@ -228,7 +342,6 @@ function App() {
           }
         />
 
-        {/* Study Mode */}
         <Route
           path="/study"
           element={
@@ -238,12 +351,10 @@ function App() {
           }
         />
 
-        {/* Unknown URL */}
         <Route
           path="*"
           element={<Navigate to="/dashboard" replace />}
         />
-
       </Routes>
     </BrowserRouter>
   );
