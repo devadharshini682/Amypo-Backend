@@ -73,6 +73,7 @@
 //         this.masteryLevel = masteryLevel;
 //     }
 // }
+
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
@@ -106,7 +107,7 @@ public class RetentionMetric {
     private MasteryLevel masteryLevel = MasteryLevel.NEW;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "card_id")
+    @JoinColumn(name = "flashcard_id")
     private Flashcard flashcard;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -172,3 +173,4 @@ public class RetentionMetric {
         this.user = user;
     }
 }
+
