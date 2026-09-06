@@ -340,4 +340,201 @@
   }
 }
 
+/* =================================
+   DASHBOARD
+   ================================= */
 
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+
+.page-header h1 {
+  margin: 0;
+  color: #111827;
+  font-size: 30px;
+  font-weight: 750;
+  letter-spacing: -0.5px;
+}
+
+.page-header p {
+  margin: 8px 0 0;
+  color: #6b7280;
+  font-size: 15px;
+}
+
+/* =================================
+   STUDY CARD
+   ================================= */
+
+.study-card {
+  margin-bottom: 28px;
+  padding: 28px 30px;
+
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+
+  box-shadow: 0 6px 22px rgba(15, 23, 42, 0.06);
+}
+
+.study-card h2 {
+  margin: 0 0 8px;
+  color: #111827;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.study-card p {
+  margin: 0 0 20px;
+  color: #6b7280;
+  font-size: 15px;
+}
+
+.study-card strong {
+  color: #2563eb;
+}
+
+/* =================================
+   STAT CARDS
+   ================================= */
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 18px;
+  margin-bottom: 28px;
+}
+
+.stat-card {
+  min-height: 145px;
+  padding: 23px 20px;
+
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 13px;
+
+  box-shadow: 0 5px 18px rgba(15, 23, 42, 0.05);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 9px 25px rgba(15, 23, 42, 0.09);
+}
+
+.stat-card h3 {
+  margin: 0 0 16px;
+
+  color: #6b7280;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.stat-card p {
+  margin: 0;
+
+  color: #111827;
+  font-size: 32px;
+  font-weight: 750;
+}
+
+/* Different stat card accents */
+
+.stat-card:nth-child(1) {
+  border-top: 4px solid #2563eb;
+}
+
+.stat-card:nth-child(2) {
+  border-top: 4px solid #14b8a6;
+}
+
+.stat-card:nth-child(3) {
+  border-top: 4px solid #22c55e;
+}
+
+.stat-card:nth-child(4) {
+  border-top: 4px solid #f59e0b;
+}
+
+.stat-card:nth-child(5) {
+  border-top: 4px solid #8b5cf6;
+}
+
+/* =================================
+   LEARNING PROGRESS
+   ================================= */
+
+.progress-section {
+  padding: 27px 30px;
+
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+
+  box-shadow: 0 5px 20px rgba(15, 23, 42, 0.05);
+}
+
+.progress-section h3 {
+  margin: 0 0 8px;
+
+  color: #111827;
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.progress-section p {
+  margin: 0;
+
+  color: #2563eb;
+  font-size: 16px;
+  font-weight: 650;
+}
+
+/* =================================
+   DASHBOARD RESPONSIVE
+   ================================= */
+
+@media (max-width: 1050px) {
+  .stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .page-header h1 {
+    font-size: 25px;
+  }
+
+  .study-card {
+    padding: 23px;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+
+  .stat-card {
+    min-height: 130px;
+  }
+
+  .progress-section {
+    padding: 23px;
+  }
+}
+
+@media (max-width: 450px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-card {
+    min-height: auto;
+  }
+}
