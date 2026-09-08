@@ -175,6 +175,8 @@ public class FlashcardController {
     @Autowired
     private StudyDeckRepository studyDeckRepository;
 
+
+    // CREATE FLASHCARD
     @PostMapping
     @PreAuthorize("hasAnyRole('LINGUIST','ADMIN')")
     public ResponseEntity<Flashcard> createFlashcard(
@@ -187,12 +189,22 @@ public class FlashcardController {
 
         Flashcard flashcard = new Flashcard();
 
-        flashcard.setFrontContent(dto.getFrontContent());
-        flashcard.setBackContent(dto.getBackContent());
-        flashcard.setOrderIndex(dto.getOrderIndex());
+        flashcard.setFrontContent(
+                dto.getFrontContent()
+        );
+
+        flashcard.setBackContent(
+                dto.getBackContent()
+        );
+
+        flashcard.setOrderIndex(
+                dto.getOrderIndex()
+        );
+
         flashcard.setStudyDeck(deck);
 
-        Flashcard saved = flashcardRepository.save(flashcard);
+        Flashcard saved =
+                flashcardRepository.save(flashcard);
 
         return new ResponseEntity<>(
                 saved,
@@ -200,97 +212,39 @@ public class FlashcardController {
         );
     }
 
+
+    // GET FLASHCARDS OF A DECK
     @GetMapping("/deck/{deckId}")
     public ResponseEntity<List<Flashcard>> getFlashcardsByDeck(
             @PathVariable Long deckId) {
 
         return ResponseEntity.ok(
                 flashcardRepository
-                        .findByStudyDeckIdOrderByOrderIndexAsc(deckId)
+                        .findByStudyDeckIdOrderByOrderIndexAsc(
+                                deckId
+                        )
         );
     }
 
-    // Endpoint expected by the existing frontend test
-    @PostMapping("/deck/{deckId}/cards")
-    @PreAuthorize("hasAnyRole('LINGUIST','ADMIN')")
-    public ResponseEntity<Flashcard> createFlashcardForDeck(
-            @PathVariable Long deckId,
-            @RequestBody LegacyFlashcardRequest request) {
 
-        StudyDeck deck = studyDeckRepository
-                .findById(deckId)
-                .orElseThrow(() ->
-                        new RuntimeException("Deck not found"));
-
-        Flashcard flashcard = new Flashcard();
-
-        flashcard.setFrontContent(request.getFrontText());
-        flashcard.setBackContent(request.getBackText());
-
-        Integer orderIndex =
-                request.getOrderIndex() != null
-                        ? request.getOrderIndex()
-                        : flashcardRepository
-                                .findByStudyDeckIdOrderByOrderIndexAsc(deckId)
-                                .size() + 1;
-
-        flashcard.setOrderIndex(orderIndex);
-        flashcard.setStudyDeck(deck);
-
-        Flashcard saved = flashcardRepository.save(flashcard);
-
-        return new ResponseEntity<>(
-                saved,
-                HttpStatus.CREATED
-        );
-    }
-
-    // Delete one specific flashcard
+    // DELETE SPECIFIC FLASHCARD
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('LINGUIST','ADMIN')")
     public ResponseEntity<String> deleteFlashcard(
             @PathVariable Long id) {
 
-        Flashcard flashcard = flashcardRepository
-                .findById(id)
-                .orElseThrow(() ->
-                        new RuntimeException("Flashcard not found"));
+        Flashcard flashcard =
+                flashcardRepository
+                        .findById(id)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Flashcard not found"
+                                ));
 
         flashcardRepository.delete(flashcard);
 
         return ResponseEntity.ok(
                 "Flashcard deleted successfully."
         );
-    }
-
-    public static class LegacyFlashcardRequest {
-
-        private String frontText;
-        private String backText;
-        private Integer orderIndex;
-
-        public String getFrontText() {
-            return frontText;
-        }
-
-        public void setFrontText(String frontText) {
-            this.frontText = frontText;
-        }
-
-        public String getBackText() {
-            return backText;
-        }
-
-        public void setBackText(String backText) {
-            this.backText = backText;
-        }
-
-        public Integer getOrderIndex() {
-            return orderIndex;
-        }
-
-        public void setOrderIndex(Integer orderIndex) {
-            this.orderIndex = orderIndex;
-        }
     }
 }

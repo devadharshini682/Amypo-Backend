@@ -264,7 +264,12 @@
 // }
 
 // export default DeckDetails;
-import React, { useCallback, useEffect, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
+
 import {
   Link,
   useNavigate,
@@ -304,7 +309,9 @@ function DeckDetails() {
         await deckService.getDeckById(id);
 
       const flashcardResponse =
-        await api.get(`/flashcards/deck/${id}`);
+        await api.get(
+          `/flashcards/deck/${id}`
+        );
 
       setDeck(
         deckResponse?.data || null
@@ -326,6 +333,7 @@ function DeckDetails() {
     } finally {
 
       setLoading(false);
+
     }
 
   }, [id]);
@@ -386,7 +394,9 @@ function DeckDetails() {
         err?.response?.data?.message ||
           "Unable to add flashcard."
       );
+
     }
+
   };
 
 
@@ -411,8 +421,9 @@ function DeckDetails() {
 
     try {
 
+      // DELETE USING FLASHCARD ID
       await api.delete(
-        `/decks/${id}/cards/${flashcardId}`
+        `/flashcards/${flashcardId}`
       );
 
 
@@ -429,7 +440,9 @@ function DeckDetails() {
         err?.response?.data?.message ||
           "Unable to delete flashcard."
       );
+
     }
+
   };
 
 
@@ -461,7 +474,9 @@ function DeckDetails() {
       setError(
         "Unable to delete deck."
       );
+
     }
+
   };
 
 
@@ -472,6 +487,7 @@ function DeckDetails() {
         Loading deck...
       </div>
     );
+
   }
 
 
@@ -482,6 +498,7 @@ function DeckDetails() {
         {error}
       </div>
     );
+
   }
 
 
@@ -492,6 +509,7 @@ function DeckDetails() {
         Failed to load deck details
       </div>
     );
+
   }
 
 
@@ -506,7 +524,7 @@ function DeckDetails() {
       </Link>
 
 
-      {/* DECK HEADER */}
+      {/* DECK DETAILS */}
       <div className="deck-detail-header">
 
         <h1>
@@ -529,7 +547,7 @@ function DeckDetails() {
       </div>
 
 
-      {/* FLASHCARD LIST */}
+      {/* FLASHCARDS */}
       <section>
 
         <h2>
@@ -635,6 +653,7 @@ function DeckDetails() {
               </div>
 
             ))
+
           )}
 
         </div>
@@ -642,7 +661,7 @@ function DeckDetails() {
       </section>
 
 
-      {/* ADD FLASHCARD FORM */}
+      {/* ADD FLASHCARD */}
       <section className="form-card">
 
         <h2>
@@ -651,7 +670,9 @@ function DeckDetails() {
 
 
         <form
-          onSubmit={handleAddFlashcard}
+          onSubmit={
+            handleAddFlashcard
+          }
         >
 
           <label htmlFor="front">
