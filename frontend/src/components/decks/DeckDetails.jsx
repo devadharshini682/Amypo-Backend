@@ -279,6 +279,7 @@ function DeckDetails() {
   const navigate = useNavigate();
 
   const [deck, setDeck] = useState(null);
+  const [flashcards, setFlashcards] = useState([]);
 
   const [front, setFront] = useState("");
   const [back, setBack] = useState("");
@@ -293,11 +294,21 @@ function DeckDetails() {
     setError("");
 
     try {
-      const response = await deckService.getDeckById(id);
+      // Get deck details
+      const deckResponse = await deckService.getDeckById(id);
 
-      setDeck(response?.data || null);
+      // Get flashcards belonging to this deck
+      const flashcardResponse = await api.get(
+        `/flashcards/deck/${id}`
+      );
+
+      setDeck(deckResponse?.data || null);
+      setFlashcards(flashcardResponse?.data || []);
     } catch (err) {
+      console.error("Error loading deck:", err);
+
       setDeck(null);
+      setFlashcards([]);
       setError("Failed to load deck details");
     } finally {
       setLoading(false);
@@ -321,10 +332,10 @@ function DeckDetails() {
 
     try {
       await api.post("/flashcards", {
+        deckId: Number(id),
         frontContent: front,
         backContent: back,
         orderIndex: flashcards.length + 1,
-        deckId: Number(id),
       });
 
       setSuccess("Flashcard added successfully.");
@@ -333,8 +344,11 @@ function DeckDetails() {
       setBack("");
       setPronunciation("");
 
+      // Reload deck and flashcards
       await loadDeck();
     } catch (err) {
+      console.error("Error adding flashcard:", err);
+
       setError(
         err?.response?.data?.message ||
           "Unable to add flashcard."
@@ -386,10 +400,6 @@ function DeckDetails() {
     );
   }
 
-  const flashcards = Array.isArray(deck.flashcards)
-    ? deck.flashcards
-    : [];
-
   return (
     <div className="page-container">
       <Link
@@ -402,9 +412,7 @@ function DeckDetails() {
       <div className="deck-detail-header">
         <h1>{deck.title}</h1>
 
-        <p>
-          {deck.description}
-        </p>
+        <p>{deck.description}</p>
 
         <button
           type="button"
@@ -431,23 +439,17 @@ function DeckDetails() {
               >
                 <div>
                   <strong>Front</strong>
-                  <p>
-                    {card.frontContent || card.front}
-                  </p>
+                  <p>{card.frontContent}</p>
                 </div>
 
                 <div>
                   <strong>Back</strong>
-                  <p>
-                    {card.backContent || card.back}
-                  </p>
+                  <p>{card.backContent}</p>
                 </div>
 
                 <div>
                   <strong>Pronunciation</strong>
-                  <p>
-                    {card.pronunciation || "-"}
-                  </p>
+                  <p>{pronunciation || "-"}</p>
                 </div>
               </div>
             ))
