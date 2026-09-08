@@ -265,11 +265,7 @@
 
 // export default DeckDetails;
 import React, { useCallback, useEffect, useState } from "react";
-import {
-  Link,
-  useNavigate,
-  useParams,
-} from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 import deckService from "../../services/deckService";
 import api from "../../services/api";
@@ -294,9 +290,7 @@ function DeckDetails() {
     setError("");
 
     try {
-      const deckResponse =
-        await deckService.getDeckById(id);
-
+      const deckResponse = await deckService.getDeckById(id);
       const flashcardResponse =
         await api.get(`/flashcards/deck/${id}`);
 
@@ -328,10 +322,9 @@ function DeckDetails() {
     }
 
     try {
-      await api.post("/flashcards", {
-        deckId: Number(id),
-        frontContent: front,
-        backContent: back,
+      await api.post(`/decks/${id}/cards`, {
+        frontText: front,
+        backText: back,
         orderIndex: flashcards.length + 1,
       });
 
@@ -425,10 +418,7 @@ function DeckDetails() {
   return (
     <div className="page-container">
 
-      <Link
-        to="/decks"
-        className="back-link"
-      >
+      <Link to="/decks" className="back-link">
         ← Back to Decks
       </Link>
 
@@ -436,9 +426,7 @@ function DeckDetails() {
 
         <h1>{deck.title}</h1>
 
-        <p>
-          {deck.description}
-        </p>
+        <p>{deck.description}</p>
 
         <button
           type="button"
@@ -474,7 +462,6 @@ function DeckDetails() {
             <p>No flashcards available.</p>
           ) : (
             flashcards.map((card) => (
-
               <div
                 className="flashcard-row"
                 key={card.id}
@@ -482,26 +469,17 @@ function DeckDetails() {
 
                 <div>
                   <strong>Front</strong>
-
-                  <p>
-                    {card.frontContent}
-                  </p>
+                  <p>{card.frontContent}</p>
                 </div>
 
                 <div>
                   <strong>Back</strong>
-
-                  <p>
-                    {card.backContent}
-                  </p>
+                  <p>{card.backContent}</p>
                 </div>
 
                 <div>
                   <strong>Pronunciation</strong>
-
-                  <p>
-                    {card.pronunciation || "-"}
-                  </p>
+                  <p>{card.pronunciation || "-"}</p>
                 </div>
 
                 <div>
@@ -517,7 +495,6 @@ function DeckDetails() {
                 </div>
 
               </div>
-
             ))
           )}
 

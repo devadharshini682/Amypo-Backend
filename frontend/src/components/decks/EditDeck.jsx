@@ -19,7 +19,9 @@ function EditDeck() {
   useEffect(() => {
     const loadDeck = async () => {
       try {
-        const response = await deckService.getDeckById(id);
+        const response =
+          await deckService.getDeckById(id);
+
         const deck = response.data;
 
         setTitle(deck.title || "");
@@ -85,6 +87,7 @@ function EditDeck() {
 
   return (
     <div className="page-container">
+
       <div className="form-container">
 
         <h1>Edit Deck</h1>
@@ -194,7 +197,9 @@ function EditDeck() {
           </button>
 
         </form>
+
       </div>
+
     </div>
   );
 }

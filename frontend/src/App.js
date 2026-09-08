@@ -362,33 +362,80 @@
 
 // export default App;
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter,
+  Navigate,
+  Route,
+  Routes,
+} from "react-router-dom";
+import { useSelector } from "react-redux";
+
+import "./App.css";
 
 import Login from "./components/auth/Login";
 import Register from "./components/auth/Register";
-
 import Dashboard from "./components/dashboard/Dashboard";
+
 import DeckList from "./components/decks/DeckList";
 import DeckDetails from "./components/decks/DeckDetails";
+import CreateDeck from "./components/decks/CreateDeck";
 import EditDeck from "./components/decks/EditDeck";
 
-import ProtectedRoute from "./components/common/ProtectedRoute";
+import StudyMode from "./components/study/StudyMode";
+import Navbar from "./components/layout/NavBar";
+
+
+function ProtectedRoute({ children }) {
+  const { isAuthenticated } = useSelector(
+    (state) => state.auth
+  );
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
+}
+
 
 function App() {
   return (
-    <Router>
+    <BrowserRouter
+      future={{
+        v7_startTransition: true,
+        v7_relativeSplatPath: true,
+      }}
+    >
+
+      <Navbar />
+
       <Routes>
 
-        {/* Authentication */}
+        {/* Home */}
+        <Route
+          path="/"
+          element={
+            <Navigate
+              to="/dashboard"
+              replace
+            />
+          }
+        />
+
+
+        {/* Login */}
         <Route
           path="/login"
           element={<Login />}
         />
 
+
+        {/* Register */}
         <Route
           path="/register"
           element={<Register />}
         />
+
 
         {/* Dashboard */}
         <Route
@@ -400,6 +447,7 @@ function App() {
           }
         />
 
+
         {/* Deck List */}
         <Route
           path="/decks"
@@ -409,6 +457,18 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+
+        {/* Create Deck */}
+        <Route
+          path="/decks/create"
+          element={
+            <ProtectedRoute>
+              <CreateDeck />
+            </ProtectedRoute>
+          }
+        />
+
 
         {/* Deck Details */}
         <Route
@@ -420,7 +480,8 @@ function App() {
           }
         />
 
-        {/* Edit Deck - T16 UPDATE LOGIC */}
+
+        {/* Edit Deck */}
         <Route
           path="/decks/:id/edit"
           element={
@@ -430,19 +491,34 @@ function App() {
           }
         />
 
-        {/* Default Route */}
+
+        {/* Study Mode */}
         <Route
-          path="/"
+          path="/study"
           element={
             <ProtectedRoute>
-              <Dashboard />
+              <StudyMode />
             </ProtectedRoute>
           }
         />
 
+
+        {/* Invalid Route */}
+        <Route
+          path="*"
+          element={
+            <Navigate
+              to="/dashboard"
+              replace
+            />
+          }
+        />
+
       </Routes>
-    </Router>
+
+    </BrowserRouter>
   );
 }
+
 
 export default App;
