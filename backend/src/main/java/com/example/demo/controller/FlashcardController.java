@@ -1,3 +1,68 @@
+// package com.example.demo.controller;
+
+// import com.example.demo.dto.FlashcardRequestDto;
+// import com.example.demo.entity.Flashcard;
+// import com.example.demo.entity.StudyDeck;
+// import com.example.demo.repository.FlashcardRepository;
+// import com.example.demo.repository.StudyDeckRepository;
+
+// import jakarta.validation.Valid;
+
+// import org.springframework.beans.factory.annotation.Autowired;
+// import org.springframework.http.HttpStatus;
+// import org.springframework.http.ResponseEntity;
+// import org.springframework.security.access.prepost.PreAuthorize;
+// import org.springframework.web.bind.annotation.*;
+
+// import java.util.List;
+
+// @RestController
+// @RequestMapping("/api/flashcards")
+// @CrossOrigin(origins = "*")
+// public class FlashcardController {
+
+//     @Autowired
+//     private FlashcardRepository flashcardRepository;
+
+//     @Autowired
+//     private StudyDeckRepository studyDeckRepository;
+
+//     @PostMapping
+//     @PreAuthorize("hasAnyRole('LINGUIST','ADMIN')")
+//     public ResponseEntity<Flashcard> createFlashcard(
+//             @Valid @RequestBody FlashcardRequestDto dto) {
+
+//         StudyDeck deck = studyDeckRepository
+//                 .findById(dto.getDeckId())
+//                 .orElseThrow(() ->
+//                         new RuntimeException("Deck not found"));
+
+//         Flashcard flashcard = new Flashcard();
+
+//         flashcard.setFrontContent(dto.getFrontContent());
+//         flashcard.setBackContent(dto.getBackContent());
+//         flashcard.setOrderIndex(dto.getOrderIndex());
+//         flashcard.setStudyDeck(deck);
+
+//         Flashcard saved =
+//                 flashcardRepository.save(flashcard);
+
+//         return new ResponseEntity<>(
+//                 saved,
+//                 HttpStatus.CREATED
+//         );
+//     }
+
+//     @GetMapping("/deck/{deckId}")
+//     public ResponseEntity<List<Flashcard>> getFlashcardsByDeck(
+//             @PathVariable Long deckId) {
+
+//         return ResponseEntity.ok(
+//                 flashcardRepository
+//                         .findByStudyDeckIdOrderByOrderIndexAsc(deckId)
+//         );
+//     }
+// }
 package com.example.demo.controller;
 
 import com.example.demo.dto.FlashcardRequestDto;
@@ -60,6 +125,24 @@ public class FlashcardController {
         return ResponseEntity.ok(
                 flashcardRepository
                         .findByStudyDeckIdOrderByOrderIndexAsc(deckId)
+        );
+    }
+
+    // DELETE A SPECIFIC FLASHCARD
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('LINGUIST','ADMIN')")
+    public ResponseEntity<String> deleteFlashcard(
+            @PathVariable Long id) {
+
+        Flashcard flashcard = flashcardRepository
+                .findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException("Flashcard not found"));
+
+        flashcardRepository.delete(flashcard);
+
+        return ResponseEntity.ok(
+                "Flashcard deleted successfully."
         );
     }
 }

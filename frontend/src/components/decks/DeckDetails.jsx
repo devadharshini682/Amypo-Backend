@@ -294,19 +294,15 @@ function DeckDetails() {
     setError("");
 
     try {
-      // Get deck details
-      const deckResponse = await deckService.getDeckById(id);
+      const deckResponse =
+        await deckService.getDeckById(id);
 
-      // Get flashcards belonging to this deck
-      const flashcardResponse = await api.get(
-        `/flashcards/deck/${id}`
-      );
+      const flashcardResponse =
+        await api.get(`/flashcards/deck/${id}`);
 
       setDeck(deckResponse?.data || null);
       setFlashcards(flashcardResponse?.data || []);
     } catch (err) {
-      console.error("Error loading deck:", err);
-
       setDeck(null);
       setFlashcards([]);
       setError("Failed to load deck details");
@@ -319,6 +315,7 @@ function DeckDetails() {
     loadDeck();
   }, [loadDeck]);
 
+  // ADD FLASHCARD
   const handleAddFlashcard = async (event) => {
     event.preventDefault();
 
@@ -344,11 +341,8 @@ function DeckDetails() {
       setBack("");
       setPronunciation("");
 
-      // Reload deck and flashcards
       await loadDeck();
     } catch (err) {
-      console.error("Error adding flashcard:", err);
-
       setError(
         err?.response?.data?.message ||
           "Unable to add flashcard."
@@ -356,6 +350,34 @@ function DeckDetails() {
     }
   };
 
+  // DELETE SPECIFIC FLASHCARD
+  const handleDeleteFlashcard = async (flashcardId) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this flashcard?"
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setError("");
+    setSuccess("");
+
+    try {
+      await api.delete(`/flashcards/${flashcardId}`);
+
+      setSuccess("Flashcard deleted successfully.");
+
+      await loadDeck();
+    } catch (err) {
+      setError(
+        err?.response?.data?.message ||
+          "Unable to delete flashcard."
+      );
+    }
+  };
+
+  // DELETE DECK
   const handleDeleteDeck = async () => {
     const confirmed = window.confirm(
       "Are you sure you want to delete this deck?"
@@ -402,6 +424,7 @@ function DeckDetails() {
 
   return (
     <div className="page-container">
+
       <Link
         to="/decks"
         className="back-link"
@@ -410,9 +433,12 @@ function DeckDetails() {
       </Link>
 
       <div className="deck-detail-header">
+
         <h1>{deck.title}</h1>
 
-        <p>{deck.description}</p>
+        <p>
+          {deck.description}
+        </p>
 
         <button
           type="button"
@@ -421,44 +447,14 @@ function DeckDetails() {
         >
           Delete Deck
         </button>
+
       </div>
 
       <section>
+
         <h2>
           Current Flashcards ({flashcards.length})
         </h2>
-
-        <div className="flashcard-list">
-          {flashcards.length === 0 ? (
-            <p>No flashcards available.</p>
-          ) : (
-            flashcards.map((card) => (
-              <div
-                className="flashcard-row"
-                key={card.id}
-              >
-                <div>
-                  <strong>Front</strong>
-                  <p>{card.frontContent}</p>
-                </div>
-
-                <div>
-                  <strong>Back</strong>
-                  <p>{card.backContent}</p>
-                </div>
-
-                <div>
-                  <strong>Pronunciation</strong>
-                  <p>{pronunciation || "-"}</p>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-      </section>
-
-      <section className="form-card">
-        <h2>Add New Flashcard</h2>
 
         {success && (
           <div className="success-message">
@@ -466,7 +462,75 @@ function DeckDetails() {
           </div>
         )}
 
+        {error && (
+          <p className="error-message">
+            {error}
+          </p>
+        )}
+
+        <div className="flashcard-list">
+
+          {flashcards.length === 0 ? (
+            <p>No flashcards available.</p>
+          ) : (
+            flashcards.map((card) => (
+
+              <div
+                className="flashcard-row"
+                key={card.id}
+              >
+
+                <div>
+                  <strong>Front</strong>
+
+                  <p>
+                    {card.frontContent}
+                  </p>
+                </div>
+
+                <div>
+                  <strong>Back</strong>
+
+                  <p>
+                    {card.backContent}
+                  </p>
+                </div>
+
+                <div>
+                  <strong>Pronunciation</strong>
+
+                  <p>
+                    {card.pronunciation || "-"}
+                  </p>
+                </div>
+
+                <div>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      handleDeleteFlashcard(card.id)
+                    }
+                    className="danger-button"
+                  >
+                    Delete
+                  </button>
+                </div>
+
+              </div>
+
+            ))
+          )}
+
+        </div>
+
+      </section>
+
+      <section className="form-card">
+
+        <h2>Add New Flashcard</h2>
+
         <form onSubmit={handleAddFlashcard}>
+
           <label htmlFor="front">
             Front (Source)
           </label>
@@ -512,20 +576,17 @@ function DeckDetails() {
             }
           />
 
-          {error && (
-            <p className="error-message">
-              {error}
-            </p>
-          )}
-
           <button
             type="submit"
             className="primary-button"
           >
             + Add to Deck
           </button>
+
         </form>
+
       </section>
+
     </div>
   );
 }
