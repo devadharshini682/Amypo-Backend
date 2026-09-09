@@ -1351,17 +1351,11 @@
 
 // export default DeckDetails;
 import React, { useCallback, useEffect, useState } from "react";
-
-import {
-  Link,
-  useNavigate,
-  useParams,
-} from "react-router-dom";
-
+import { useNavigate, useParams } from "react-router-dom";
 import deckService from "../../services/deckService";
 import api from "../../services/api";
 
-function DeckDetails() {
+const DeckDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -1373,32 +1367,22 @@ function DeckDetails() {
   const [pronunciation, setPronunciation] = useState("");
   const [exampleSentence, setExampleSentence] = useState("");
 
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   const loadDeck = useCallback(async () => {
-    setLoading(true);
-    setError("");
-
     try {
-      const deckResponse =
-        await deckService.getDeckById(id);
+      setLoading(true);
+      setError("");
 
-      setDeck(deckResponse?.data || null);
+      const deckResponse = await deckService.getDeckById(id);
+      setDeck(deckResponse.data);
 
-      const cardResponse =
-        await api.get(`/flashcards/deck/${id}`);
-
-      setFlashcards(
-        Array.isArray(cardResponse?.data)
-          ? cardResponse.data
-          : []
-      );
+      const flashcardResponse = await api.get(`/flashcards/deck/${id}`);
+      setFlashcards(flashcardResponse.data);
     } catch (err) {
-      setDeck(null);
-      setFlashcards([]);
-      setError("Failed to load deck details");
+      console.error(err);
+      setError("Failed to load deck details.");
     } finally {
       setLoading(false);
     }
@@ -1408,14 +1392,11 @@ function DeckDetails() {
     loadDeck();
   }, [loadDeck]);
 
-  const handleAddFlashcard = async (event) => {
-    event.preventDefault();
-
-    setError("");
-    setSuccess("");
+  const handleAddCard = async (e) => {
+    e.preventDefault();
 
     if (!front.trim() || !back.trim()) {
-      setError("Front and Back are required.");
+      alert("Front and Back are required.");
       return;
     }
 
@@ -1423,12 +1404,14 @@ function DeckDetails() {
       await api.post(`/decks/${id}/cards`, {
         frontText: front,
         backText: back,
-        pronunciation: pronunciation,
-        exampleSentence: exampleSentence,
+        pronunciation: pronunciation || "",
+        exampleSentence: exampleSentence || "",
+
+        // Automatically send the current deck ID
+        deckId: Number(id),
+
         orderIndex: flashcards.length + 1,
       });
-
-      setSuccess("Flashcard added successfully.");
 
       setFront("");
       setBack("");
@@ -1437,304 +1420,188 @@ function DeckDetails() {
 
       await loadDeck();
     } catch (err) {
-      setError(
-        err?.response?.data?.message ||
-          "Unable to add flashcard."
-      );
+      console.error(err);
+
+      const message =
+        err.response?.data?.message ||
+        err.response?.data ||
+        "Failed to add flashcard.";
+
+      alert(message);
     }
   };
 
-  const handleDeleteFlashcard = async (flashcardId) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this flashcard?"
-    );
-
-    if (!confirmed) {
+  const handleDeleteCard = async (flashcardId) => {
+    if (!window.confirm("Are you sure you want to delete this flashcard?")) {
       return;
     }
 
     try {
-      await api.delete(
-        `/flashcards/${flashcardId}`
-      );
+      await api.delete(`/flashcards/${flashcardId}`);
 
-      setSuccess(
-        "Flashcard deleted successfully."
+      setFlashcards((prev) =>
+        prev.filter((card) => card.id !== flashcardId)
       );
-
-      await loadDeck();
     } catch (err) {
-      setError(
-        "Unable to delete flashcard."
-      );
+      console.error(err);
+      alert("Failed to delete flashcard.");
     }
   };
 
   const handleDeleteDeck = async () => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this deck?"
-    );
-
-    if (!confirmed) {
+    if (!window.confirm("Are you sure you want to delete this deck?")) {
       return;
     }
 
     try {
       await deckService.deleteDeck(id);
-
-      alert(
-        "StudyDeck deleted successfully."
-      );
-
       navigate("/decks");
     } catch (err) {
-      setError("Unable to delete deck.");
+      console.error(err);
+      alert("Failed to delete deck.");
     }
   };
 
   if (loading) {
-    return (
-      <div className="page-container">
-        Loading deck...
-      </div>
-    );
+    return <div>Loading...</div>;
   }
 
-  if (error && !deck) {
-    return (
-      <div className="page-container">
-        {error}
-      </div>
-    );
+  if (error) {
+    return <div>{error}</div>;
   }
 
   if (!deck) {
-    return (
-      <div className="page-container">
-        Failed to load deck details
-      </div>
-    );
+    return <div>Deck not found.</div>;
   }
 
   return (
-    <div className="page-container">
+    <div>
+      <nav>
+        <h2>LangLoop</h2>
 
-      <Link
-        to="/decks"
-        className="back-link"
-      >
-        ← Back to Decks
-      </Link>
+        <div>
+          <button onClick={() => navigate("/dashboard")}>
+            Dashboard
+          </button>
 
-      <div className="deck-detail-header">
+          <button onClick={() => navigate("/decks")}>
+            Decks
+          </button>
+
+          <button onClick={() => navigate("/study")}>
+            Study
+          </button>
+
+          <button onClick={() => navigate("/login")}>
+            Logout
+          </button>
+        </div>
+      </nav>
+
+      <main>
+        <button onClick={() => navigate("/decks")}>
+          ← Back to Decks
+        </button>
 
         <h1>{deck.title}</h1>
 
-        <p>
-          {deck.description}
-        </p>
+        <p>{deck.description}</p>
 
-        <button
-          type="button"
-          onClick={handleDeleteDeck}
-          className="danger-button"
-        >
+        <button onClick={handleDeleteDeck}>
           Delete Deck
         </button>
 
-      </div>
+        <h2>Current Flashcards ({flashcards.length})</h2>
 
-      <section>
-
-        <h2>
-          Current Flashcards ({flashcards.length})
-        </h2>
-
-        <div className="flashcard-list">
-
-          {flashcards.length === 0 ? (
-
-            <p>
-              No flashcards available.
-            </p>
-
-          ) : (
-
-            flashcards.map((card) => (
-
-              <div
-                className="flashcard-row"
-                key={card.id}
-              >
-
-                <div>
-                  <strong>Front</strong>
-
-                  <p>
-                    {card.frontText ||
-                      card.frontContent ||
-                      card.front ||
-                      "-"}
-                  </p>
-                </div>
-
-                <div>
-                  <strong>Back</strong>
-
-                  <p>
-                    {card.backText ||
-                      card.backContent ||
-                      card.back ||
-                      "-"}
-                  </p>
-                </div>
-
-                {/* STATUS ADDED HERE */}
-                <div>
-                  <strong>Status</strong>
-
-                  <p>
-                    {card.status || "ACTIVE"}
-                  </p>
-                </div>
-
-                <div>
-                  <strong>Pronunciation</strong>
-
-                  <p>
-                    {card.pronunciation ||
-                      "-"}
-                  </p>
-                </div>
-
-                <div>
-                  <strong>
-                    Example Sentence
-                  </strong>
-
-                  <p>
-                    {card.exampleSentence ||
-                      "-"}
-                  </p>
-                </div>
-
-                <button
-                  type="button"
-                  className="danger-button"
-                  onClick={() =>
-                    handleDeleteFlashcard(
-                      card.id
-                    )
-                  }
-                >
-                  Delete
-                </button>
-
+        {flashcards.length === 0 ? (
+          <p>No flashcards available.</p>
+        ) : (
+          flashcards.map((card) => (
+            <div key={card.id}>
+              <div>
+                <strong>Front</strong>
+                <p>{card.frontContent}</p>
               </div>
 
-            ))
+              <div>
+                <strong>Back</strong>
+                <p>{card.backContent}</p>
+              </div>
 
-          )}
+              <div>
+                <strong>Status</strong>
+                <p>{card.status || "ACTIVE"}</p>
+              </div>
 
-        </div>
+              <div>
+                <strong>Pronunciation</strong>
+                <p>{card.pronunciation || "-"}</p>
+              </div>
 
-      </section>
+              <div>
+                <strong>Example Sentence</strong>
+                <p>{card.exampleSentence || "-"}</p>
+              </div>
 
-      <section className="form-card">
-
-        <h2>
-          Add New Flashcard
-        </h2>
-
-        {success && (
-          <div className="success-message">
-            {success}
-          </div>
+              <button onClick={() => handleDeleteCard(card.id)}>
+                Delete
+              </button>
+            </div>
+          ))
         )}
 
-        <form onSubmit={handleAddFlashcard}>
+        <h2>Add New Flashcard</h2>
 
-          <label htmlFor="front">
-            Front (Source)
-          </label>
+        <form onSubmit={handleAddCard}>
+          <div>
+            <label>Front (Source)</label>
+            <input
+              type="text"
+              value={front}
+              onChange={(e) => setFront(e.target.value)}
+              placeholder="Enter source text"
+              required
+            />
+          </div>
 
-          <input
-            id="front"
-            name="front"
-            type="text"
-            placeholder="e.g., Hello"
-            value={front}
-            onChange={(e) =>
-              setFront(e.target.value)
-            }
-          />
+          <div>
+            <label>Back (Translation)</label>
+            <input
+              type="text"
+              value={back}
+              onChange={(e) => setBack(e.target.value)}
+              placeholder="Enter translation"
+              required
+            />
+          </div>
 
-          <label htmlFor="back">
-            Back (Translation)
-          </label>
+          <div>
+            <label>Pronunciation (Optional)</label>
+            <input
+              type="text"
+              value={pronunciation}
+              onChange={(e) => setPronunciation(e.target.value)}
+              placeholder="Enter pronunciation"
+            />
+          </div>
 
-          <input
-            id="back"
-            name="back"
-            type="text"
-            placeholder="e.g., Hola"
-            value={back}
-            onChange={(e) =>
-              setBack(e.target.value)
-            }
-          />
+          <div>
+            <label>Example Sentence (Optional)</label>
+            <input
+              type="text"
+              value={exampleSentence}
+              onChange={(e) => setExampleSentence(e.target.value)}
+              placeholder="e.g., This is a sample sentence"
+            />
+          </div>
 
-          <label htmlFor="pronunciation">
-            Pronunciation (Optional)
-          </label>
-
-          <input
-            id="pronunciation"
-            name="pronunciation"
-            type="text"
-            placeholder="e.g., həˈləʊ"
-            value={pronunciation}
-            onChange={(e) =>
-              setPronunciation(e.target.value)
-            }
-          />
-
-          <label htmlFor="exampleSentence">
-            Example Sentence (Optional)
-          </label>
-
-          <input
-            id="exampleSentence"
-            name="exampleSentence"
-            type="text"
-            placeholder="e.g., This is a sample sentence"
-            value={exampleSentence}
-            onChange={(e) =>
-              setExampleSentence(
-                e.target.value
-              )
-            }
-          />
-
-          {error && (
-            <p className="error-message">
-              {error}
-            </p>
-          )}
-
-          <button
-            type="submit"
-            className="primary-button"
-          >
+          <button type="submit">
             + Add to Deck
           </button>
-
         </form>
-
-      </section>
-
+      </main>
     </div>
   );
-}
+};
 
 export default DeckDetails;
