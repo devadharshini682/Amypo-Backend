@@ -1351,6 +1351,7 @@
 
 // export default DeckDetails;
 import React, { useCallback, useEffect, useState } from "react";
+
 import {
   Link,
   useNavigate,
@@ -1585,6 +1586,15 @@ function DeckDetails() {
                       card.backContent ||
                       card.back ||
                       "-"}
+                  </p>
+                </div>
+
+                {/* STATUS ADDED HERE */}
+                <div>
+                  <strong>Status</strong>
+
+                  <p>
+                    {card.status || "ACTIVE"}
                   </p>
                 </div>
 
