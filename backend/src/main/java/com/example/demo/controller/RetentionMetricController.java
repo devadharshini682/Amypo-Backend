@@ -65,45 +65,33 @@
 // }
 package com.example.demo.controller;
 
-import com.example.demo.dto.SessionResultDto;
-import com.example.demo.entity.StudySession;
-import com.example.demo.service.StudySessionService;
+import com.example.demo.entity.RetentionMetric;
+import com.example.demo.service.SpacedRepetitionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/api/study")
+@RequestMapping("/api/retention")
 @CrossOrigin
-public class StudyController {
+public class RetentionMetricController {
 
-    private final StudySessionService studySessionService;
+    private final SpacedRepetitionService spacedRepetitionService;
 
-    public StudyController(StudySessionService studySessionService) {
-        this.studySessionService = studySessionService;
+    public RetentionMetricController(
+            SpacedRepetitionService spacedRepetitionService) {
+        this.spacedRepetitionService = spacedRepetitionService;
     }
 
-    @PostMapping("/sessions/start")
+    @GetMapping("/user/{userId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'LINGUIST', 'LEARNER')")
-    public ResponseEntity<StudySession> startSession(
-            @RequestParam Long deckId) {
+    public ResponseEntity<List<RetentionMetric>> getUserRetention(
+            @PathVariable Long userId) {
 
         return ResponseEntity.ok(
-                studySessionService.startSession(deckId)
-        );
-    }
-
-    @PostMapping("/sessions/{sessionId}/complete")
-    @PreAuthorize("hasAnyRole('ADMIN', 'LINGUIST', 'LEARNER')")
-    public ResponseEntity<StudySession> completeSession(
-            @PathVariable Long sessionId,
-            @RequestBody SessionResultDto result) {
-
-        return ResponseEntity.ok(
-                studySessionService.completeSession(
-                        sessionId,
-                        result
-                )
+                spacedRepetitionService.getRetentionMetrics(userId)
         );
     }
 }

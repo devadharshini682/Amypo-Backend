@@ -35,55 +35,99 @@
 //     }
 
 // }
+// package com.example.demo.controller;
+
+// import com.example.demo.dto.DueCardDto;
+// import com.example.demo.dto.SessionResultDto;
+// import com.example.demo.entity.RetentionMetric;
+// import com.example.demo.entity.StudySession;
+// import com.example.demo.service.SpacedRepetitionService;
+// import com.example.demo.service.StudySessionService;
+// import org.springframework.beans.factory.annotation.Autowired;
+// import org.springframework.web.bind.annotation.*;
+
+// import java.util.List;
+// import java.util.stream.Collectors;
+
+// @RestController
+// @RequestMapping("/api/study")
+// @CrossOrigin(origins = "*")
+// public class StudyController {
+
+//     @Autowired
+//     private SpacedRepetitionService spacedRepetitionService;
+
+//     @Autowired
+//     private StudySessionService studySessionService;
+
+//     @GetMapping("/due")
+//     public List<DueCardDto> getDueReviews(
+//             @RequestParam Long userId) {
+
+//         List<RetentionMetric> metrics =
+//                 spacedRepetitionService.getDueReviews(userId);
+
+//         return metrics.stream()
+//                 .filter(metric -> metric.getFlashcard() != null)
+//                 .map(metric -> new DueCardDto(
+//                         metric.getFlashcard().getId(),
+//                         metric.getFlashcard().getFrontContent(),
+//                         metric.getFlashcard().getBackContent(),
+//                         metric.getEaseFactor(),
+//                         metric.getIntervalDays(),
+//                         metric.getMasteryLevel().name()
+//                 ))
+//                 .collect(Collectors.toList());
+//     }
+
+//     @PostMapping("/complete")
+//     public StudySession completeSession(
+//             @RequestBody SessionResultDto dto) {
+
+//         return studySessionService.completeSession(dto);
+//     }
+// }
 package com.example.demo.controller;
 
-import com.example.demo.dto.DueCardDto;
 import com.example.demo.dto.SessionResultDto;
-import com.example.demo.entity.RetentionMetric;
 import com.example.demo.entity.StudySession;
-import com.example.demo.service.SpacedRepetitionService;
 import com.example.demo.service.StudySessionService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/study")
-@CrossOrigin(origins = "*")
+@CrossOrigin
 public class StudyController {
 
-    @Autowired
-    private SpacedRepetitionService spacedRepetitionService;
+    private final StudySessionService studySessionService;
 
-    @Autowired
-    private StudySessionService studySessionService;
-
-    @GetMapping("/due")
-    public List<DueCardDto> getDueReviews(
-            @RequestParam Long userId) {
-
-        List<RetentionMetric> metrics =
-                spacedRepetitionService.getDueReviews(userId);
-
-        return metrics.stream()
-                .filter(metric -> metric.getFlashcard() != null)
-                .map(metric -> new DueCardDto(
-                        metric.getFlashcard().getId(),
-                        metric.getFlashcard().getFrontContent(),
-                        metric.getFlashcard().getBackContent(),
-                        metric.getEaseFactor(),
-                        metric.getIntervalDays(),
-                        metric.getMasteryLevel().name()
-                ))
-                .collect(Collectors.toList());
+    public StudyController(StudySessionService studySessionService) {
+        this.studySessionService = studySessionService;
     }
 
-    @PostMapping("/complete")
-    public StudySession completeSession(
-            @RequestBody SessionResultDto dto) {
+    @PostMapping("/sessions/start")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LINGUIST', 'LEARNER')")
+    public ResponseEntity<StudySession> startSession(
+            @RequestParam Long deckId) {
 
-        return studySessionService.completeSession(dto);
+        return ResponseEntity.ok(
+                studySessionService.startSession(deckId)
+        );
+    }
+
+    @PostMapping("/sessions/{sessionId}/complete")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LINGUIST', 'LEARNER')")
+    public ResponseEntity<StudySession> completeSession(
+            @PathVariable Long sessionId,
+            @RequestBody SessionResultDto result) {
+
+        return ResponseEntity.ok(
+                studySessionService.completeSession(
+                        sessionId,
+                        result
+                )
+        );
     }
 }
