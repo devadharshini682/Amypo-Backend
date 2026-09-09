@@ -1728,396 +1728,564 @@
 // }
 
 // export default DeckDetails;
-import React, { useCallback, useEffect, useState } from "react";
+// import React, { useCallback, useEffect, useState } from "react";
 
-import {
-  Link,
-  useNavigate,
-  useParams,
-} from "react-router-dom";
+// import {
+//   Link,
+//   useNavigate,
+//   useParams,
+// } from "react-router-dom";
 
-import deckService from "../../services/deckService";
-import api from "../../services/api";
+// import deckService from "../../services/deckService";
+// import api from "../../services/api";
 
-function DeckDetails() {
+// function DeckDetails() {
+//   const { id } = useParams();
+//   const navigate = useNavigate();
+
+//   const [deck, setDeck] = useState(null);
+//   const [flashcards, setFlashcards] = useState([]);
+
+//   const [front, setFront] = useState("");
+//   const [back, setBack] = useState("");
+//   const [pronunciation, setPronunciation] = useState("");
+//   const [exampleSentence, setExampleSentence] = useState("");
+
+//   const [error, setError] = useState("");
+//   const [success, setSuccess] = useState("");
+//   const [loading, setLoading] = useState(true);
+
+//   const loadDeck = useCallback(async () => {
+//     setLoading(true);
+//     setError("");
+
+//     try {
+//       const deckResponse =
+//         await deckService.getDeckById(id);
+
+//       setDeck(deckResponse?.data || null);
+
+//       const cardResponse =
+//         await api.get(`/flashcards/deck/${id}`);
+
+//       setFlashcards(
+//         Array.isArray(cardResponse?.data)
+//           ? cardResponse.data
+//           : []
+//       );
+//     } catch (err) {
+//       setDeck(null);
+//       setFlashcards([]);
+//       setError("Failed to load deck details");
+//     } finally {
+//       setLoading(false);
+//     }
+//   }, [id]);
+
+//   useEffect(() => {
+//     loadDeck();
+//   }, [loadDeck]);
+
+//   const handleAddFlashcard = async (event) => {
+//     event.preventDefault();
+
+//     setError("");
+//     setSuccess("");
+
+//     if (!front.trim() || !back.trim()) {
+//       setError("Front and Back are required.");
+//       return;
+//     }
+
+//     try {
+//       await api.post(`/decks/${id}/cards`, {
+//         frontText: front,
+//         backText: back,
+//         pronunciation: pronunciation,
+//         exampleSentence: exampleSentence,
+
+//         // FIX: send the current deck ID
+//         deckId: Number(id),
+
+//         orderIndex: flashcards.length + 1,
+//       });
+
+//       setSuccess("Flashcard added successfully.");
+
+//       setFront("");
+//       setBack("");
+//       setPronunciation("");
+//       setExampleSentence("");
+
+//       await loadDeck();
+//     } catch (err) {
+//       setError(
+//         err?.response?.data?.message ||
+//           "Unable to add flashcard."
+//       );
+//     }
+//   };
+
+//   const handleDeleteFlashcard = async (flashcardId) => {
+//     const confirmed = window.confirm(
+//       "Are you sure you want to delete this flashcard?"
+//     );
+
+//     if (!confirmed) {
+//       return;
+//     }
+
+//     try {
+//       await api.delete(
+//         `/flashcards/${flashcardId}`
+//       );
+
+//       setSuccess(
+//         "Flashcard deleted successfully."
+//       );
+
+//       await loadDeck();
+//     } catch (err) {
+//       setError(
+//         "Unable to delete flashcard."
+//       );
+//     }
+//   };
+
+//   const handleDeleteDeck = async () => {
+//     const confirmed = window.confirm(
+//       "Are you sure you want to delete this deck?"
+//     );
+
+//     if (!confirmed) {
+//       return;
+//     }
+
+//     try {
+//       await deckService.deleteDeck(id);
+
+//       alert(
+//         "StudyDeck deleted successfully."
+//       );
+
+//       navigate("/decks");
+//     } catch (err) {
+//       setError("Unable to delete deck.");
+//     }
+//   };
+
+//   if (loading) {
+//     return (
+//       <div className="page-container">
+//         Loading deck...
+//       </div>
+//     );
+//   }
+
+//   if (error && !deck) {
+//     return (
+//       <div className="page-container">
+//         {error}
+//       </div>
+//     );
+//   }
+
+//   if (!deck) {
+//     return (
+//       <div className="page-container">
+//         Failed to load deck details
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div className="page-container">
+
+//       <Link
+//         to="/decks"
+//         className="back-link"
+//       >
+//         ← Back to Decks
+//       </Link>
+
+//       <div className="deck-detail-header">
+
+//         <h1>{deck.title}</h1>
+
+//         <p>
+//           {deck.description}
+//         </p>
+
+//         <button
+//           type="button"
+//           onClick={handleDeleteDeck}
+//           className="danger-button"
+//         >
+//           Delete Deck
+//         </button>
+
+//       </div>
+
+//       <section>
+
+//         <h2>
+//           Current Flashcards ({flashcards.length})
+//         </h2>
+
+//         <div className="flashcard-list">
+
+//           {flashcards.length === 0 ? (
+
+//             <p>
+//               No flashcards available.
+//             </p>
+
+//           ) : (
+
+//             flashcards.map((card) => (
+
+//               <div
+//                 className="flashcard-row"
+//                 key={card.id}
+//               >
+
+//                 <div>
+//                   <strong>Front</strong>
+
+//                   <p>
+//                     {card.frontText ||
+//                       card.frontContent ||
+//                       card.front ||
+//                       "-"}
+//                   </p>
+//                 </div>
+
+//                 <div>
+//                   <strong>Back</strong>
+
+//                   <p>
+//                     {card.backText ||
+//                       card.backContent ||
+//                       card.back ||
+//                       "-"}
+//                   </p>
+//                 </div>
+
+//                 <div>
+//                   <strong>Status</strong>
+
+//                   <p>
+//                     {card.status || "ACTIVE"}
+//                   </p>
+//                 </div>
+
+//                 <div>
+//                   <strong>
+//                     Pronunciation
+//                   </strong>
+
+//                   <p>
+//                     {card.pronunciation ||
+//                       "-"}
+//                   </p>
+//                 </div>
+
+//                 <div>
+//                   <strong>
+//                     Example Sentence
+//                   </strong>
+
+//                   <p>
+//                     {card.exampleSentence ||
+//                       "-"}
+//                   </p>
+//                 </div>
+
+//                 <button
+//                   type="button"
+//                   className="danger-button"
+//                   onClick={() =>
+//                     handleDeleteFlashcard(
+//                       card.id
+//                     )
+//                   }
+//                 >
+//                   Delete
+//                 </button>
+
+//               </div>
+
+//             ))
+
+//           )}
+
+//         </div>
+
+//       </section>
+
+//       <section className="form-card">
+
+//         <h2>
+//           Add New Flashcard
+//         </h2>
+
+//         {success && (
+//           <div className="success-message">
+//             {success}
+//           </div>
+//         )}
+
+//         <form onSubmit={handleAddFlashcard}>
+
+//           <label htmlFor="front">
+//             Front (Source)
+//           </label>
+
+//           <input
+//             id="front"
+//             name="front"
+//             type="text"
+//             placeholder="e.g., Hello"
+//             value={front}
+//             onChange={(e) =>
+//               setFront(e.target.value)
+//             }
+//           />
+
+//           <label htmlFor="back">
+//             Back (Translation)
+//           </label>
+
+//           <input
+//             id="back"
+//             name="back"
+//             type="text"
+//             placeholder="e.g., Hola"
+//             value={back}
+//             onChange={(e) =>
+//               setBack(e.target.value)
+//             }
+//           />
+
+//           <label htmlFor="pronunciation">
+//             Pronunciation (Optional)
+//           </label>
+
+//           <input
+//             id="pronunciation"
+//             name="pronunciation"
+//             type="text"
+//             placeholder="e.g., həˈləʊ"
+//             value={pronunciation}
+//             onChange={(e) =>
+//               setPronunciation(e.target.value)
+//             }
+//           />
+
+//           <label htmlFor="exampleSentence">
+//             Example Sentence (Optional)
+//           </label>
+
+//           <input
+//             id="exampleSentence"
+//             name="exampleSentence"
+//             type="text"
+//             placeholder="e.g., This is a sample sentence"
+//             value={exampleSentence}
+//             onChange={(e) =>
+//               setExampleSentence(
+//                 e.target.value
+//               )
+//             }
+//           />
+
+//           {error && (
+//             <p className="error-message">
+//               {error}
+//             </p>
+//           )}
+
+//           <button
+//             type="submit"
+//             className="primary-button"
+//           >
+//             + Add to Deck
+//           </button>
+
+//         </form>
+
+//       </section>
+
+//     </div>
+//   );
+// }
+
+// export default DeckDetails;
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
+
+const DeckDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
   const [deck, setDeck] = useState(null);
   const [flashcards, setFlashcards] = useState([]);
-
-  const [front, setFront] = useState("");
-  const [back, setBack] = useState("");
-  const [pronunciation, setPronunciation] = useState("");
-  const [exampleSentence, setExampleSentence] = useState("");
-
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const loadDeck = useCallback(async () => {
-    setLoading(true);
-    setError("");
-
-    try {
-      const deckResponse =
-        await deckService.getDeckById(id);
-
-      setDeck(deckResponse?.data || null);
-
-      const cardResponse =
-        await api.get(`/flashcards/deck/${id}`);
-
-      setFlashcards(
-        Array.isArray(cardResponse?.data)
-          ? cardResponse.data
-          : []
-      );
-    } catch (err) {
-      setDeck(null);
-      setFlashcards([]);
-      setError("Failed to load deck details");
-    } finally {
-      setLoading(false);
-    }
-  }, [id]);
+  const role = localStorage.getItem("role");
 
   useEffect(() => {
     loadDeck();
-  }, [loadDeck]);
+    loadFlashcards();
+  }, [id]);
 
-  const handleAddFlashcard = async (event) => {
-    event.preventDefault();
-
-    setError("");
-    setSuccess("");
-
-    if (!front.trim() || !back.trim()) {
-      setError("Front and Back are required.");
-      return;
-    }
-
+  const loadDeck = async () => {
     try {
-      await api.post(`/decks/${id}/cards`, {
-        frontText: front,
-        backText: back,
-        pronunciation: pronunciation,
-        exampleSentence: exampleSentence,
-
-        // FIX: send the current deck ID
-        deckId: Number(id),
-
-        orderIndex: flashcards.length + 1,
-      });
-
-      setSuccess("Flashcard added successfully.");
-
-      setFront("");
-      setBack("");
-      setPronunciation("");
-      setExampleSentence("");
-
-      await loadDeck();
-    } catch (err) {
-      setError(
-        err?.response?.data?.message ||
-          "Unable to add flashcard."
+      const response = await axios.get(
+        `/api/decks/${id}`
       );
+
+      setDeck(response.data);
+    } catch (err) {
+      setError("Unable to load deck.");
     }
   };
 
-  const handleDeleteFlashcard = async (flashcardId) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this flashcard?"
-    );
-
-    if (!confirmed) {
-      return;
-    }
-
+  const loadFlashcards = async () => {
     try {
-      await api.delete(
-        `/flashcards/${flashcardId}`
+      const response = await axios.get(
+        `/api/flashcards/deck/${id}`
       );
 
-      setSuccess(
-        "Flashcard deleted successfully."
-      );
-
-      await loadDeck();
+      setFlashcards(response.data);
     } catch (err) {
-      setError(
-        "Unable to delete flashcard."
-      );
+      setError("Unable to load flashcards.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleDeleteDeck = async () => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this deck?"
-    );
-
-    if (!confirmed) {
-      return;
-    }
-
+  const cloneDeck = async () => {
     try {
-      await deckService.deleteDeck(id);
-
-      alert(
-        "StudyDeck deleted successfully."
+      await axios.post(
+        `/api/decks/${id}/clone`
       );
 
+      alert("Deck cloned successfully.");
       navigate("/decks");
+
     } catch (err) {
-      setError("Unable to delete deck.");
+      setError("Unable to clone deck.");
+    }
+  };
+
+  const updateStatus = async (
+    flashcardId,
+    status
+  ) => {
+    try {
+      await axios.put(
+        `/api/flashcards/${flashcardId}/status?status=${status}`
+      );
+
+      loadFlashcards();
+
+    } catch (err) {
+      setError(
+        "Unable to update flashcard status."
+      );
     }
   };
 
   if (loading) {
-    return (
-      <div className="page-container">
-        Loading deck...
-      </div>
-    );
-  }
-
-  if (error && !deck) {
-    return (
-      <div className="page-container">
-        {error}
-      </div>
-    );
+    return <div>Loading...</div>;
   }
 
   if (!deck) {
-    return (
-      <div className="page-container">
-        Failed to load deck details
-      </div>
-    );
+    return <div>{error || "Deck not found."}</div>;
   }
 
   return (
-    <div className="page-container">
+    <div className="deck-details">
 
-      <Link
-        to="/decks"
-        className="back-link"
-      >
-        ← Back to Decks
-      </Link>
+      <h2>{deck.title}</h2>
 
-      <div className="deck-detail-header">
-
-        <h1>{deck.title}</h1>
-
+      {deck.language && (
         <p>
-          {deck.description}
+          Language:{" "}
+          {deck.language.name}
         </p>
+      )}
 
+      <button onClick={cloneDeck}>
+        Clone Deck
+      </button>
+
+      {role !== "LEARNER" && (
         <button
-          type="button"
-          onClick={handleDeleteDeck}
-          className="danger-button"
+          onClick={() =>
+            navigate(`/decks/${id}/edit`)
+          }
         >
-          Delete Deck
+          Edit Deck
         </button>
+      )}
 
-      </div>
+      <h3>Flashcards</h3>
 
-      <section>
+      {flashcards.length === 0 ? (
+        <p>No flashcards available.</p>
+      ) : (
+        flashcards.map((card) => (
+          <div
+            key={card.id}
+            className="flashcard"
+          >
+            <h4>{card.frontText}</h4>
 
-        <h2>
-          Current Flashcards ({flashcards.length})
-        </h2>
-
-        <div className="flashcard-list">
-
-          {flashcards.length === 0 ? (
+            <p>{card.backText}</p>
 
             <p>
-              No flashcards available.
+              Status:{" "}
+              <strong>
+                {card.reviewStatus}
+              </strong>
             </p>
 
-          ) : (
+            <button
+              onClick={() =>
+                updateStatus(
+                  card.id,
+                  "LEARNING"
+                )
+              }
+            >
+              Learning
+            </button>
 
-            flashcards.map((card) => (
-
-              <div
-                className="flashcard-row"
-                key={card.id}
-              >
-
-                <div>
-                  <strong>Front</strong>
-
-                  <p>
-                    {card.frontText ||
-                      card.frontContent ||
-                      card.front ||
-                      "-"}
-                  </p>
-                </div>
-
-                <div>
-                  <strong>Back</strong>
-
-                  <p>
-                    {card.backText ||
-                      card.backContent ||
-                      card.back ||
-                      "-"}
-                  </p>
-                </div>
-
-                <div>
-                  <strong>Status</strong>
-
-                  <p>
-                    {card.status || "ACTIVE"}
-                  </p>
-                </div>
-
-                <div>
-                  <strong>
-                    Pronunciation
-                  </strong>
-
-                  <p>
-                    {card.pronunciation ||
-                      "-"}
-                  </p>
-                </div>
-
-                <div>
-                  <strong>
-                    Example Sentence
-                  </strong>
-
-                  <p>
-                    {card.exampleSentence ||
-                      "-"}
-                  </p>
-                </div>
-
-                <button
-                  type="button"
-                  className="danger-button"
-                  onClick={() =>
-                    handleDeleteFlashcard(
-                      card.id
-                    )
-                  }
-                >
-                  Delete
-                </button>
-
-              </div>
-
-            ))
-
-          )}
-
-        </div>
-
-      </section>
-
-      <section className="form-card">
-
-        <h2>
-          Add New Flashcard
-        </h2>
-
-        {success && (
-          <div className="success-message">
-            {success}
+            <button
+              onClick={() =>
+                updateStatus(
+                  card.id,
+                  "MASTERED"
+                )
+              }
+            >
+              Mastered
+            </button>
           </div>
-        )}
+        ))
+      )}
 
-        <form onSubmit={handleAddFlashcard}>
-
-          <label htmlFor="front">
-            Front (Source)
-          </label>
-
-          <input
-            id="front"
-            name="front"
-            type="text"
-            placeholder="e.g., Hello"
-            value={front}
-            onChange={(e) =>
-              setFront(e.target.value)
-            }
-          />
-
-          <label htmlFor="back">
-            Back (Translation)
-          </label>
-
-          <input
-            id="back"
-            name="back"
-            type="text"
-            placeholder="e.g., Hola"
-            value={back}
-            onChange={(e) =>
-              setBack(e.target.value)
-            }
-          />
-
-          <label htmlFor="pronunciation">
-            Pronunciation (Optional)
-          </label>
-
-          <input
-            id="pronunciation"
-            name="pronunciation"
-            type="text"
-            placeholder="e.g., həˈləʊ"
-            value={pronunciation}
-            onChange={(e) =>
-              setPronunciation(e.target.value)
-            }
-          />
-
-          <label htmlFor="exampleSentence">
-            Example Sentence (Optional)
-          </label>
-
-          <input
-            id="exampleSentence"
-            name="exampleSentence"
-            type="text"
-            placeholder="e.g., This is a sample sentence"
-            value={exampleSentence}
-            onChange={(e) =>
-              setExampleSentence(
-                e.target.value
-              )
-            }
-          />
-
-          {error && (
-            <p className="error-message">
-              {error}
-            </p>
-          )}
-
-          <button
-            type="submit"
-            className="primary-button"
-          >
-            + Add to Deck
-          </button>
-
-        </form>
-
-      </section>
-
+      {error && (
+        <p className="error">
+          {error}
+        </p>
+      )}
     </div>
   );
-}
+};
 
 export default DeckDetails;
