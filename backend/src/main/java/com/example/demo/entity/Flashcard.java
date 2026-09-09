@@ -108,32 +108,25 @@ public class Flashcard {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
     @Column(nullable = false)
     @NotBlank
     private String frontContent;
-
 
     @Column(nullable = false)
     @NotBlank
     private String backContent;
 
-
     @Column(nullable = false)
     @NotNull
     private Integer orderIndex;
 
-
     private String pronunciation;
-
 
     @Column(length = 500)
     private String exampleSentence;
 
-
     @Column
-    private String status = "ACTIVE";
-
+    private String status = "LEARNING";
 
     @ManyToOne
     @JoinColumn(
@@ -143,107 +136,70 @@ public class Flashcard {
     @JsonIgnore
     private StudyDeck studyDeck;
 
-
     public Flashcard() {
     }
-
 
     public Long getId() {
         return id;
     }
 
-
     public void setId(Long id) {
         this.id = id;
     }
-
 
     public String getFrontContent() {
         return frontContent;
     }
 
-
-    public void setFrontContent(
-            String frontContent) {
-
-        this.frontContent =
-            frontContent;
+    public void setFrontContent(String frontContent) {
+        this.frontContent = frontContent;
     }
-
 
     public String getBackContent() {
         return backContent;
     }
 
-
-    public void setBackContent(
-            String backContent) {
-
-        this.backContent =
-            backContent;
+    public void setBackContent(String backContent) {
+        this.backContent = backContent;
     }
-
 
     public Integer getOrderIndex() {
         return orderIndex;
     }
 
-
-    public void setOrderIndex(
-            Integer orderIndex) {
-
-        this.orderIndex =
-            orderIndex;
+    public void setOrderIndex(Integer orderIndex) {
+        this.orderIndex = orderIndex;
     }
-
 
     public String getPronunciation() {
         return pronunciation;
     }
 
-
-    public void setPronunciation(
-            String pronunciation) {
-
-        this.pronunciation =
-            pronunciation;
+    public void setPronunciation(String pronunciation) {
+        this.pronunciation = pronunciation;
     }
-
 
     public String getExampleSentence() {
         return exampleSentence;
     }
 
-
-    public void setExampleSentence(
-            String exampleSentence) {
-
-        this.exampleSentence =
-            exampleSentence;
+    public void setExampleSentence(String exampleSentence) {
+        this.exampleSentence = exampleSentence;
     }
-
 
     public String getStatus() {
         return status;
     }
 
-
-    public void setStatus(
-            String status) {
-
+    public void setStatus(String status) {
         this.status = status;
     }
-
 
     public StudyDeck getStudyDeck() {
         return studyDeck;
     }
 
-
-    public void setStudyDeck(
-            StudyDeck studyDeck) {
-
-        this.studyDeck =
-            studyDeck;
+    public void setStudyDeck(StudyDeck studyDeck) {
+        this.studyDeck = studyDeck;
     }
 }
