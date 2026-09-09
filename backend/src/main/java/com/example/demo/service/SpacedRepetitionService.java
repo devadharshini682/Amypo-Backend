@@ -35,35 +35,121 @@
 //                 .collect(Collectors.toList());
 //     }
 // }
+// package com.example.demo.service;
+
+// import com.example.demo.entity.RetentionMetric;
+// import com.example.demo.repository.RetentionMetricRepository;
+// import org.springframework.beans.factory.annotation.Autowired;
+// import org.springframework.stereotype.Service;
+
+// import java.time.LocalDateTime;
+// import java.util.List;
+
+// @Service
+// public class SpacedRepetitionService {
+
+//     @Autowired
+//     private RetentionMetricRepository retentionMetricRepository;
+
+//     public void updateRetentionMetric(
+//             Long userId,
+//             Long cardId,
+//             Integer quality) {
+
+//         // Existing method preserved.
+//     }
+
+//     public List<RetentionMetric> getDueReviews(Long userId) {
+
+//         return retentionMetricRepository.findDueReviews(
+//                 userId,
+//                 LocalDateTime.now()
+//         );
+//     }
+// }
 package com.example.demo.service;
 
+import com.example.demo.entity.Flashcard;
 import com.example.demo.entity.RetentionMetric;
+import com.example.demo.repository.FlashcardRepository;
 import com.example.demo.repository.RetentionMetricRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+@Transactional
 public class SpacedRepetitionService {
 
-    @Autowired
-    private RetentionMetricRepository retentionMetricRepository;
+    private final FlashcardRepository flashcardRepository;
+    private final RetentionMetricRepository retentionMetricRepository;
 
-    public void updateRetentionMetric(
-            Long userId,
-            Long cardId,
-            Integer quality) {
+    public SpacedRepetitionService(
+            FlashcardRepository flashcardRepository,
+            RetentionMetricRepository retentionMetricRepository) {
 
-        // Existing method preserved.
+        this.flashcardRepository = flashcardRepository;
+        this.retentionMetricRepository =
+                retentionMetricRepository;
     }
 
-    public List<RetentionMetric> getDueReviews(Long userId) {
+    public Flashcard recordReview(
+            Long flashcardId,
+            Long userId,
+            boolean correct) {
 
-        return retentionMetricRepository.findDueReviews(
-                userId,
-                LocalDateTime.now()
-        );
+        Flashcard card =
+                flashcardRepository.findById(flashcardId)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Flashcard not found"
+                                ));
+
+        LocalDateTime now = LocalDateTime.now();
+
+        card.setLastReviewedAt(now);
+
+        if (correct) {
+
+            card.setReviewStatus(
+                    Flashcard.ReviewStatus.MASTERED
+            );
+
+            card.setNextReviewAt(
+                    now.plusDays(7)
+            );
+
+        } else {
+
+            card.setReviewStatus(
+                    Flashcard.ReviewStatus.LEARNING
+            );
+
+            card.setNextReviewAt(
+                    now.plusDays(1)
+            );
+        }
+
+        flashcardRepository.save(card);
+
+        RetentionMetric metric = new RetentionMetric();
+
+        metric.setUserId(userId);
+        metric.setFlashcardId(flashcardId);
+        metric.setCorrect(correct);
+        metric.setReviewedAt(now);
+
+        retentionMetricRepository.save(metric);
+
+        return card;
+    }
+
+    public List<RetentionMetric> getRetentionMetrics(
+            Long userId) {
+
+        return retentionMetricRepository
+                .findByUserId(userId);
     }
 }

@@ -153,310 +153,569 @@
 //     }
 
 // }
+// package com.example.demo.service;
+
+// import com.example.demo.dto.DeckRequestDto;
+
+// import com.example.demo.entity.Flashcard;
+// import com.example.demo.entity.StudyDeck;
+// import com.example.demo.entity.SystemUser;
+
+// import com.example.demo.repository.FlashcardRepository;
+// import com.example.demo.repository.StudyDeckRepository;
+// import com.example.demo.repository.SystemUserRepository;
+
+// import org.springframework.beans.factory.annotation.Autowired;
+
+// import org.springframework.stereotype.Service;
+
+// import org.springframework.transaction.annotation.Transactional;
+
+// import java.util.List;
+
+
+// @Service
+// public class DeckManagementServiceImpl
+//         implements DeckManagementService {
+
+
+//     @Autowired
+//     private StudyDeckRepository studyDeckRepository;
+
+
+//     @Autowired
+//     private SystemUserRepository systemUserRepository;
+
+
+//     @Autowired
+//     private FlashcardRepository flashcardRepository;
+
+
+//     // --------------------------------
+//     // GET ALL
+//     // --------------------------------
+
+//     @Override
+//     public List<StudyDeck> getAllDecks() {
+
+//         return studyDeckRepository.findAll();
+
+//     }
+
+
+//     // --------------------------------
+//     // GET BY ID
+//     // --------------------------------
+
+//     @Override
+//     public StudyDeck getDeckById(
+//             Long id) {
+
+//         return studyDeckRepository
+//             .findById(id)
+//             .orElse(null);
+
+//     }
+
+
+//     // --------------------------------
+//     // CREATE
+//     // --------------------------------
+
+//     @Override
+//     public StudyDeck createDeck(
+//             DeckRequestDto dto,
+//             String username) {
+
+
+//         SystemUser user =
+//             systemUserRepository
+//                 .findByUsername(username)
+//                 .orElseThrow(
+//                     () -> new RuntimeException(
+//                         "User not found"
+//                     )
+//                 );
+
+
+//         StudyDeck deck =
+//             new StudyDeck();
+
+
+//         deck.setTitle(
+//             dto.getTitle()
+//         );
+
+
+//         deck.setDescription(
+//             dto.getDescription()
+//         );
+
+
+//         deck.setMentorName(
+//             dto.getMentorName()
+//         );
+
+
+//         deck.setCapacity(
+//             dto.getCapacity()
+//         );
+
+
+//         deck.setOwner(
+//             user
+//         );
+
+
+//         return studyDeckRepository.save(
+//             deck
+//         );
+//     }
+
+
+//     // --------------------------------
+//     // UPDATE
+//     // --------------------------------
+
+//     @Override
+//     public StudyDeck updateDeck(
+//             Long id,
+//             DeckRequestDto dto) {
+
+
+//         StudyDeck deck =
+//             studyDeckRepository
+//                 .findById(id)
+//                 .orElse(null);
+
+
+//         if (deck != null) {
+
+//             deck.setTitle(
+//                 dto.getTitle()
+//             );
+
+//             deck.setDescription(
+//                 dto.getDescription()
+//             );
+
+//             deck.setMentorName(
+//                 dto.getMentorName()
+//             );
+
+//             deck.setCapacity(
+//                 dto.getCapacity()
+//             );
+
+
+//             return studyDeckRepository.save(
+//                 deck
+//             );
+//         }
+
+
+//         return null;
+//     }
+
+
+//     // --------------------------------
+//     // DELETE
+//     // --------------------------------
+
+//     @Override
+//     public void deleteDeck(
+//             Long id) {
+
+//         studyDeckRepository.deleteById(
+//             id
+//         );
+//     }
+
+
+//     // --------------------------------
+//     // CLONE
+//     // --------------------------------
+
+//     @Override
+//     @Transactional
+//     public StudyDeck cloneDeck(
+//             Long id,
+//             String username) {
+
+
+//         // Find original deck
+//         StudyDeck source =
+//             studyDeckRepository
+//                 .findById(id)
+//                 .orElseThrow(
+//                     () -> new RuntimeException(
+//                         "Deck not found"
+//                     )
+//                 );
+
+
+//         // Find current logged-in user
+//         SystemUser owner =
+//             systemUserRepository
+//                 .findByUsername(username)
+//                 .orElseThrow(
+//                     () -> new RuntimeException(
+//                         "User not found"
+//                     )
+//                 );
+
+
+//         // Create new deck
+//         StudyDeck copy =
+//             new StudyDeck();
+
+
+//         copy.setTitle(
+//             source.getTitle() +
+//             " (Copy)"
+//         );
+
+
+//         copy.setDescription(
+//             source.getDescription()
+//         );
+
+
+//         copy.setMentorName(
+//             source.getMentorName()
+//         );
+
+
+//         copy.setCapacity(
+//             source.getCapacity()
+//         );
+
+
+//         copy.setOwner(
+//             owner
+//         );
+
+
+//         // Save cloned deck first
+//         StudyDeck savedCopy =
+//             studyDeckRepository.save(
+//                 copy
+//             );
+
+
+//         // Copy every flashcard
+//         for (
+//             Flashcard sourceCard :
+//             source.getFlashcards()
+//         ) {
+
+
+//             Flashcard copyCard =
+//                 new Flashcard();
+
+
+//             copyCard.setFrontContent(
+//                 sourceCard.getFrontContent()
+//             );
+
+
+//             copyCard.setBackContent(
+//                 sourceCard.getBackContent()
+//             );
+
+
+//             copyCard.setOrderIndex(
+//                 sourceCard.getOrderIndex()
+//             );
+
+
+//             copyCard.setPronunciation(
+//                 sourceCard.getPronunciation()
+//             );
+
+
+//             copyCard.setExampleSentence(
+//                 sourceCard.getExampleSentence()
+//             );
+
+
+//             copyCard.setStatus(
+//                 sourceCard.getStatus() == null
+//                     ? "ACTIVE"
+//                     : sourceCard.getStatus()
+//             );
+
+
+//             copyCard.setStudyDeck(
+//                 savedCopy
+//             );
+
+
+//             flashcardRepository.save(
+//                 copyCard
+//             );
+//         }
+
+
+//         return savedCopy;
+//     }
+// }
 package com.example.demo.service;
 
 import com.example.demo.dto.DeckRequestDto;
-
+import com.example.demo.dto.FlashcardRequestDto;
 import com.example.demo.entity.Flashcard;
+import com.example.demo.entity.LanguageTrack;
 import com.example.demo.entity.StudyDeck;
-import com.example.demo.entity.SystemUser;
-
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.FlashcardRepository;
+import com.example.demo.repository.LanguageTrackRepository;
 import com.example.demo.repository.StudyDeckRepository;
-import com.example.demo.repository.SystemUserRepository;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.stereotype.Service;
-
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
-
 @Service
+@Transactional
 public class DeckManagementServiceImpl
         implements DeckManagementService {
 
+    private final StudyDeckRepository deckRepository;
+    private final FlashcardRepository flashcardRepository;
+    private final LanguageTrackRepository languageRepository;
 
-    @Autowired
-    private StudyDeckRepository studyDeckRepository;
+    public DeckManagementServiceImpl(
+            StudyDeckRepository deckRepository,
+            FlashcardRepository flashcardRepository,
+            LanguageTrackRepository languageRepository) {
 
-
-    @Autowired
-    private SystemUserRepository systemUserRepository;
-
-
-    @Autowired
-    private FlashcardRepository flashcardRepository;
-
-
-    // --------------------------------
-    // GET ALL
-    // --------------------------------
+        this.deckRepository = deckRepository;
+        this.flashcardRepository = flashcardRepository;
+        this.languageRepository = languageRepository;
+    }
 
     @Override
     public List<StudyDeck> getAllDecks() {
-
-        return studyDeckRepository.findAll();
-
+        return deckRepository.findAll();
     }
-
-
-    // --------------------------------
-    // GET BY ID
-    // --------------------------------
 
     @Override
-    public StudyDeck getDeckById(
-            Long id) {
-
-        return studyDeckRepository
-            .findById(id)
-            .orElse(null);
-
+    public StudyDeck getDeckById(Long id) {
+        return deckRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Deck not found: " + id
+                        ));
     }
-
-
-    // --------------------------------
-    // CREATE
-    // --------------------------------
 
     @Override
-    public StudyDeck createDeck(
-            DeckRequestDto dto,
-            String username) {
+    public StudyDeck createDeck(DeckRequestDto request) {
 
+        StudyDeck deck = new StudyDeck();
 
-        SystemUser user =
-            systemUserRepository
-                .findByUsername(username)
-                .orElseThrow(
-                    () -> new RuntimeException(
-                        "User not found"
-                    )
-                );
+        deck.setTitle(request.getTitle());
+        deck.setPublic(request.isPublic());
 
+        if (request.getLanguageId() != null) {
+            LanguageTrack language =
+                    languageRepository.findById(
+                            request.getLanguageId()
+                    ).orElseThrow(() ->
+                            new ResourceNotFoundException(
+                                    "Language not found"
+                            ));
 
-        StudyDeck deck =
-            new StudyDeck();
+            deck.setLanguage(language);
+        }
 
-
-        deck.setTitle(
-            dto.getTitle()
-        );
-
-
-        deck.setDescription(
-            dto.getDescription()
-        );
-
-
-        deck.setMentorName(
-            dto.getMentorName()
-        );
-
-
-        deck.setCapacity(
-            dto.getCapacity()
-        );
-
-
-        deck.setOwner(
-            user
-        );
-
-
-        return studyDeckRepository.save(
-            deck
-        );
+        return deckRepository.save(deck);
     }
-
-
-    // --------------------------------
-    // UPDATE
-    // --------------------------------
 
     @Override
     public StudyDeck updateDeck(
             Long id,
-            DeckRequestDto dto) {
+            DeckRequestDto request) {
 
+        StudyDeck deck = getDeckById(id);
 
-        StudyDeck deck =
-            studyDeckRepository
-                .findById(id)
-                .orElse(null);
+        deck.setTitle(request.getTitle());
+        deck.setPublic(request.isPublic());
 
+        if (request.getLanguageId() != null) {
+            LanguageTrack language =
+                    languageRepository.findById(
+                            request.getLanguageId()
+                    ).orElseThrow(() ->
+                            new ResourceNotFoundException(
+                                    "Language not found"
+                            ));
 
-        if (deck != null) {
-
-            deck.setTitle(
-                dto.getTitle()
-            );
-
-            deck.setDescription(
-                dto.getDescription()
-            );
-
-            deck.setMentorName(
-                dto.getMentorName()
-            );
-
-            deck.setCapacity(
-                dto.getCapacity()
-            );
-
-
-            return studyDeckRepository.save(
-                deck
-            );
+            deck.setLanguage(language);
         }
 
-
-        return null;
+        return deckRepository.save(deck);
     }
 
-
-    // --------------------------------
-    // DELETE
-    // --------------------------------
+    @Override
+    public void deleteDeck(Long id) {
+        StudyDeck deck = getDeckById(id);
+        deckRepository.delete(deck);
+    }
 
     @Override
-    public void deleteDeck(
-            Long id) {
+    public StudyDeck cloneDeck(Long id) {
 
-        studyDeckRepository.deleteById(
-            id
+        StudyDeck original = getDeckById(id);
+
+        StudyDeck clone = new StudyDeck();
+
+        clone.setTitle(
+                original.getTitle() + " (Clone)"
         );
+
+        clone.setPublic(original.isPublic());
+        clone.setLanguage(original.getLanguage());
+
+        for (Flashcard originalCard :
+                original.getFlashcards()) {
+
+            Flashcard card = new Flashcard();
+
+            card.setFrontText(
+                    originalCard.getFrontText()
+            );
+
+            card.setBackText(
+                    originalCard.getBackText()
+            );
+
+            card.setReviewStatus(
+                    Flashcard.ReviewStatus.LEARNING
+            );
+
+            card.setDeck(clone);
+
+            clone.getFlashcards().add(card);
+        }
+
+        return deckRepository.save(clone);
     }
 
+    @Override
+    public List<Flashcard> getFlashcardsByDeck(
+            Long deckId) {
 
-    // --------------------------------
-    // CLONE
-    // --------------------------------
+        return flashcardRepository
+                .findByDeckId(deckId);
+    }
 
     @Override
-    @Transactional
-    public StudyDeck cloneDeck(
+    public Flashcard createFlashcard(
+            FlashcardRequestDto request) {
+
+        StudyDeck deck = getDeckById(
+                request.getDeckId()
+        );
+
+        Flashcard card = new Flashcard();
+
+        card.setFrontText(
+                request.getFrontText()
+        );
+
+        card.setBackText(
+                request.getBackText()
+        );
+
+        card.setReviewStatus(
+                Flashcard.ReviewStatus.LEARNING
+        );
+
+        card.setDeck(deck);
+
+        return flashcardRepository.save(card);
+    }
+
+    @Override
+    public Flashcard updateFlashcard(
             Long id,
-            String username) {
+            FlashcardRequestDto request) {
 
+        Flashcard card =
+                flashcardRepository.findById(id)
+                        .orElseThrow(() ->
+                                new ResourceNotFoundException(
+                                        "Flashcard not found"
+                                ));
 
-        // Find original deck
-        StudyDeck source =
-            studyDeckRepository
-                .findById(id)
-                .orElseThrow(
-                    () -> new RuntimeException(
-                        "Deck not found"
-                    )
-                );
-
-
-        // Find current logged-in user
-        SystemUser owner =
-            systemUserRepository
-                .findByUsername(username)
-                .orElseThrow(
-                    () -> new RuntimeException(
-                        "User not found"
-                    )
-                );
-
-
-        // Create new deck
-        StudyDeck copy =
-            new StudyDeck();
-
-
-        copy.setTitle(
-            source.getTitle() +
-            " (Copy)"
+        card.setFrontText(
+                request.getFrontText()
         );
 
-
-        copy.setDescription(
-            source.getDescription()
+        card.setBackText(
+                request.getBackText()
         );
 
+        return flashcardRepository.save(card);
+    }
 
-        copy.setMentorName(
-            source.getMentorName()
-        );
+    @Override
+    public void deleteFlashcard(Long id) {
 
+        Flashcard card =
+                flashcardRepository.findById(id)
+                        .orElseThrow(() ->
+                                new ResourceNotFoundException(
+                                        "Flashcard not found"
+                                ));
 
-        copy.setCapacity(
-            source.getCapacity()
-        );
+        flashcardRepository.delete(card);
+    }
 
+    @Override
+    public Flashcard updateReviewStatus(
+            Long id,
+            String status) {
 
-        copy.setOwner(
-            owner
-        );
+        Flashcard card =
+                flashcardRepository.findById(id)
+                        .orElseThrow(() ->
+                                new ResourceNotFoundException(
+                                        "Flashcard not found"
+                                ));
 
+        Flashcard.ReviewStatus reviewStatus;
 
-        // Save cloned deck first
-        StudyDeck savedCopy =
-            studyDeckRepository.save(
-                copy
-            );
-
-
-        // Copy every flashcard
-        for (
-            Flashcard sourceCard :
-            source.getFlashcards()
-        ) {
-
-
-            Flashcard copyCard =
-                new Flashcard();
-
-
-            copyCard.setFrontContent(
-                sourceCard.getFrontContent()
-            );
-
-
-            copyCard.setBackContent(
-                sourceCard.getBackContent()
-            );
-
-
-            copyCard.setOrderIndex(
-                sourceCard.getOrderIndex()
-            );
-
-
-            copyCard.setPronunciation(
-                sourceCard.getPronunciation()
-            );
-
-
-            copyCard.setExampleSentence(
-                sourceCard.getExampleSentence()
-            );
-
-
-            copyCard.setStatus(
-                sourceCard.getStatus() == null
-                    ? "ACTIVE"
-                    : sourceCard.getStatus()
-            );
-
-
-            copyCard.setStudyDeck(
-                savedCopy
-            );
-
-
-            flashcardRepository.save(
-                copyCard
+        try {
+            reviewStatus =
+                    Flashcard.ReviewStatus.valueOf(
+                            status.toUpperCase()
+                    );
+        } catch (IllegalArgumentException ex) {
+            throw new IllegalArgumentException(
+                    "Invalid review status. Use LEARNING or MASTERED."
             );
         }
 
+        card.setReviewStatus(reviewStatus);
+        card.setLastReviewedAt(LocalDateTime.now());
 
-        return savedCopy;
+        if (reviewStatus ==
+                Flashcard.ReviewStatus.MASTERED) {
+
+            card.setNextReviewAt(
+                    LocalDateTime.now().plusDays(7)
+            );
+
+        } else {
+
+            card.setNextReviewAt(
+                    LocalDateTime.now().plusDays(1)
+            );
+        }
+
+        return flashcardRepository.save(card);
     }
 }
