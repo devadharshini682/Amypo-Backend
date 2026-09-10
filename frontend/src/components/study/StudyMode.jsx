@@ -1243,6 +1243,390 @@
 // }
 
 // export default StudyMode;
+// import React, {
+//   useEffect,
+//   useState,
+// } from "react";
+// import {
+//   Link,
+//   useSearchParams,
+// } from "react-router-dom";
+// import api from "../../services/api";
+
+// function StudyMode() {
+//   const [searchParams] =
+//     useSearchParams();
+
+//   const deckId =
+//     searchParams.get("deckId");
+
+//   const [cards, setCards] =
+//     useState([]);
+
+//   const [currentIndex, setCurrentIndex] =
+//     useState(0);
+
+//   const [loading, setLoading] =
+//     useState(true);
+
+//   const [error, setError] =
+//     useState("");
+
+//   const [showAnswer, setShowAnswer] =
+//     useState(false);
+
+//   const [sessionCompleted, setSessionCompleted] =
+//     useState(false);
+
+//   // --------------------------------
+//   // LOAD CARDS
+//   // --------------------------------
+//   const loadCards = async () => {
+//     setLoading(true);
+//     setError("");
+
+//     try {
+//       let response;
+
+//       /*
+//        * When a specific deck is selected,
+//        * load only that deck's flashcards.
+//        */
+//       if (deckId) {
+//         response = await api.get(
+//           `/flashcards/deck/${deckId}`
+//         );
+//       } else {
+//         /*
+//          * Keep the existing general
+//          * study behaviour when no deck
+//          * is selected.
+//          */
+//         const userId = 10;
+
+//         response = await api.get(
+//           `/study/due?userId=${userId}`
+//         );
+//       }
+
+//       console.log(
+//         "Study Mode - Response:",
+//         response.data
+//       );
+
+//       const data = response?.data;
+
+//       let result = [];
+
+//       if (Array.isArray(data)) {
+//         result = data;
+//       } else if (
+//         Array.isArray(data?.cards)
+//       ) {
+//         result = data.cards;
+//       } else if (
+//         Array.isArray(data?.flashcards)
+//       ) {
+//         result = data.flashcards;
+//       } else if (
+//         Array.isArray(data?.items)
+//       ) {
+//         result = data.items;
+//       }
+
+//       console.log(
+//         "Study Mode - Cards:",
+//         result
+//       );
+
+//       setCards(result);
+//       setCurrentIndex(0);
+//       setShowAnswer(false);
+//       setSessionCompleted(false);
+//     } catch (err) {
+//       console.error(
+//         "Failed to load study cards:",
+//         err
+//       );
+
+//       setCards([]);
+
+//       setError(
+//         "Failed to load study cards."
+//       );
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   useEffect(() => {
+//     loadCards();
+
+//     // Reload whenever selected deck changes.
+//     // eslint-disable-next-line react-hooks/exhaustive-deps
+//   }, [deckId]);
+
+//   const currentCard =
+//     cards[currentIndex];
+
+//   // --------------------------------
+//   // COMPLETE STUDY SESSION
+//   // --------------------------------
+//   const completeStudySession =
+//     async () => {
+//       if (!deckId) {
+//         return;
+//       }
+
+//       try {
+//         const user =
+//           JSON.parse(
+//             localStorage.getItem("user") ||
+//               "{}"
+//           );
+
+//         const userId =
+//           user?.id || 10;
+
+//         /*
+//          * Score is calculated from
+//          * completed cards.
+//          *
+//          * Since the current UI does not
+//          * have correct/incorrect buttons,
+//          * completing all cards gives 100.
+//          */
+//         const score = 100;
+
+//         await api.post(
+//           "/study/complete",
+//           {
+//             userId: userId,
+//             deckId: Number(deckId),
+//             score: score,
+//           }
+//         );
+
+//         setSessionCompleted(true);
+//       } catch (err) {
+//         console.error(
+//           "Failed to complete study session:",
+//           err
+//         );
+
+//         setError(
+//           "Study completed, but session could not be saved."
+//         );
+//       }
+//     };
+
+//   // --------------------------------
+//   // NEXT CARD
+//   // --------------------------------
+//   const nextCard = async () => {
+//     if (
+//       currentIndex <
+//       cards.length - 1
+//     ) {
+//       setCurrentIndex(
+//         currentIndex + 1
+//       );
+
+//       setShowAnswer(false);
+//     } else {
+//       await completeStudySession();
+//     }
+//   };
+
+//   // --------------------------------
+//   // LOADING
+//   // --------------------------------
+//   if (loading) {
+//     return (
+//       <div className="study-page">
+//         <div className="study-card">
+//           Loading...
+//         </div>
+//       </div>
+//     );
+//   }
+
+//   // --------------------------------
+//   // ERROR
+//   // --------------------------------
+//   if (error && !cards.length) {
+//     return (
+//       <div className="study-page">
+//         <div className="study-card">
+//           <h1>
+//             Study Mode
+//           </h1>
+
+//           <p>
+//             {error}
+//           </p>
+
+//           <button
+//             type="button"
+//             onClick={loadCards}
+//           >
+//             Retry
+//           </button>
+//         </div>
+//       </div>
+//     );
+//   }
+
+//   // --------------------------------
+//   // SESSION COMPLETED
+//   // --------------------------------
+//   if (sessionCompleted) {
+//     return (
+//       <div className="study-page">
+//         <div className="study-card">
+//           <h1>
+//             Study Completed
+//           </h1>
+
+//           <p>
+//             You have completed all the
+//             flashcards in this deck.
+//           </p>
+
+//           <p>
+//             Study session saved successfully.
+//           </p>
+
+//           <Link
+//             to="/decks"
+//             className="secondary-button"
+//           >
+//             Back to Decks
+//           </Link>
+//         </div>
+//       </div>
+//     );
+//   }
+
+//   // --------------------------------
+//   // NO CARDS
+//   // --------------------------------
+//   if (cards.length === 0) {
+//     return (
+//       <div className="study-page">
+//         <div className="study-card">
+//           <h1>
+//             Study Mode
+//           </h1>
+
+//           <p>
+//             No flashcards are available
+//             for this deck.
+//           </p>
+
+//           <Link
+//             to="/decks"
+//             className="secondary-button"
+//           >
+//             Back to Decks
+//           </Link>
+//         </div>
+//       </div>
+//     );
+//   }
+
+//   // --------------------------------
+//   // STUDY CARD
+//   // --------------------------------
+//   return (
+//     <div className="study-page">
+//       <div className="study-card">
+
+//         <div className="study-progress">
+//           Question{" "}
+//           {currentIndex + 1}
+//           {" "}of{" "}
+//           {cards.length}
+//         </div>
+
+//         <h1>
+//           Q{currentIndex + 1}
+//         </h1>
+
+//         <div className="question-card">
+
+//           <p className="question-text">
+//             {currentCard?.frontContent ||
+//               currentCard?.frontText ||
+//               currentCard?.front ||
+//               currentCard?.question ||
+//               currentCard?.source ||
+//               ""}
+//           </p>
+
+//           {showAnswer && (
+//             <div className="answer">
+
+//               <strong>
+//                 Answer
+//               </strong>
+
+//               <p>
+//                 {currentCard?.backContent ||
+//                   currentCard?.backText ||
+//                   currentCard?.back ||
+//                   currentCard?.answer ||
+//                   currentCard?.translation ||
+//                   ""}
+//               </p>
+
+//             </div>
+//           )}
+
+//         </div>
+
+//         {!showAnswer ? (
+//           <button
+//             type="button"
+//             className="primary-button"
+//             onClick={() =>
+//               setShowAnswer(true)
+//             }
+//           >
+//             Show Answer
+//           </button>
+//         ) : (
+//           <button
+//             type="button"
+//             className="primary-button"
+//             onClick={nextCard}
+//           >
+//             {currentIndex <
+//             cards.length - 1
+//               ? "Next Card"
+//               : "Finish Study"}
+//           </button>
+//         )}
+
+//         {error && (
+//           <p className="error-message">
+//             {error}
+//           </p>
+//         )}
+
+//         <Link
+//           to="/decks"
+//           className="secondary-button"
+//         >
+//           Back to Decks
+//         </Link>
+
+//       </div>
+//     </div>
+//   );
+// }
+
+// export default StudyMode;
 import React, {
   useEffect,
   useState,
@@ -1277,6 +1661,15 @@ function StudyMode() {
 
   const [sessionCompleted, setSessionCompleted] =
     useState(false);
+
+  // --------------------------------
+  // UI-ONLY SESSION COUNTS
+  // --------------------------------
+  const [masteredCount, setMasteredCount] =
+    useState(0);
+
+  const [practiceCount, setPracticeCount] =
+    useState(0);
 
   // --------------------------------
   // LOAD CARDS
@@ -1343,6 +1736,10 @@ function StudyMode() {
       setCurrentIndex(0);
       setShowAnswer(false);
       setSessionCompleted(false);
+
+      // Reset UI-only counters
+      setMasteredCount(0);
+      setPracticeCount(0);
     } catch (err) {
       console.error(
         "Failed to load study cards:",
@@ -1389,12 +1786,8 @@ function StudyMode() {
           user?.id || 10;
 
         /*
-         * Score is calculated from
-         * completed cards.
-         *
-         * Since the current UI does not
-         * have correct/incorrect buttons,
-         * completing all cards gives 100.
+         * Keep the existing session
+         * completion behaviour unchanged.
          */
         const score = 100;
 
@@ -1484,6 +1877,7 @@ function StudyMode() {
     return (
       <div className="study-page">
         <div className="study-card">
+
           <h1>
             Study Completed
           </h1>
@@ -1492,6 +1886,24 @@ function StudyMode() {
             You have completed all the
             flashcards in this deck.
           </p>
+
+          <div className="session-result">
+
+            <div className="result-item">
+              <span>Mastered</span>
+              <strong>
+                {masteredCount}
+              </strong>
+            </div>
+
+            <div className="result-item">
+              <span>Need Practice</span>
+              <strong>
+                {practiceCount}
+              </strong>
+            </div>
+
+          </div>
 
           <p>
             Study session saved successfully.
@@ -1503,6 +1915,7 @@ function StudyMode() {
           >
             Back to Decks
           </Link>
+
         </div>
       </div>
     );
@@ -1515,6 +1928,7 @@ function StudyMode() {
     return (
       <div className="study-page">
         <div className="study-card">
+
           <h1>
             Study Mode
           </h1>
@@ -1530,30 +1944,146 @@ function StudyMode() {
           >
             Back to Decks
           </Link>
+
         </div>
       </div>
     );
   }
 
   // --------------------------------
+  // STUDY PROGRESS
+  // --------------------------------
+  const progress =
+    ((currentIndex + 1) /
+      cards.length) *
+    100;
+
+  const remainingCards =
+    cards.length -
+    currentIndex -
+    1;
+
+  // --------------------------------
   // STUDY CARD
   // --------------------------------
   return (
     <div className="study-page">
+
       <div className="study-card">
 
-        <div className="study-progress">
-          Question{" "}
-          {currentIndex + 1}
-          {" "}of{" "}
-          {cards.length}
+        {/* SESSION HEADER */}
+
+        <div className="study-session-header">
+
+          <div>
+            <span className="study-label">
+              STUDY SESSION
+            </span>
+
+            <h1>
+              Question {currentIndex + 1}
+              {" "}of{" "}
+              {cards.length}
+            </h1>
+          </div>
+
+          <div className="question-number">
+            {currentIndex + 1}
+            <span>
+              /{cards.length}
+            </span>
+          </div>
+
         </div>
 
-        <h1>
-          Q{currentIndex + 1}
-        </h1>
+        {/* PROGRESS BAR */}
+
+        <div className="study-progress-container">
+
+          <div className="study-progress-bar">
+
+            <div
+              className="study-progress-fill"
+              style={{
+                width: `${progress}%`,
+              }}
+            />
+
+          </div>
+
+          <div className="study-progress-text">
+            <span>
+              {Math.round(progress)}% complete
+            </span>
+
+            <span>
+              {remainingCards} remaining
+            </span>
+          </div>
+
+        </div>
+
+        {/* SESSION STATS */}
+
+        <div className="session-stats">
+
+          <div className="session-stat">
+            <span className="stat-icon">
+              ✓
+            </span>
+
+            <div>
+              <small>
+                Mastered
+              </small>
+
+              <strong>
+                {masteredCount}
+              </strong>
+            </div>
+          </div>
+
+          <div className="session-stat">
+            <span className="stat-icon practice">
+              !
+            </span>
+
+            <div>
+              <small>
+                Need Practice
+              </small>
+
+              <strong>
+                {practiceCount}
+              </strong>
+            </div>
+          </div>
+
+          <div className="session-stat">
+            <span className="stat-icon remaining">
+              ○
+            </span>
+
+            <div>
+              <small>
+                Remaining
+              </small>
+
+              <strong>
+                {remainingCards}
+              </strong>
+            </div>
+          </div>
+
+        </div>
+
+        {/* QUESTION */}
 
         <div className="question-card">
+
+          <span className="question-label">
+            QUESTION
+          </span>
 
           <p className="question-text">
             {currentCard?.frontContent ||
@@ -1564,12 +2094,14 @@ function StudyMode() {
               ""}
           </p>
 
+          {/* ANSWER */}
+
           {showAnswer && (
             <div className="answer">
 
-              <strong>
-                Answer
-              </strong>
+              <span className="answer-label">
+                ANSWER
+              </span>
 
               <p>
                 {currentCard?.backContent ||
@@ -1585,27 +2117,56 @@ function StudyMode() {
 
         </div>
 
+        {/* ACTIONS */}
+
         {!showAnswer ? (
+
           <button
             type="button"
-            className="primary-button"
+            className="primary-button study-main-button"
             onClick={() =>
               setShowAnswer(true)
             }
           >
             Show Answer
           </button>
+
         ) : (
-          <button
-            type="button"
-            className="primary-button"
-            onClick={nextCard}
-          >
-            {currentIndex <
-            cards.length - 1
-              ? "Next Card"
-              : "Finish Study"}
-          </button>
+
+          <div className="study-actions">
+
+            <button
+              type="button"
+              className="practice-button"
+              onClick={() => {
+                setPracticeCount(
+                  (count) => count + 1
+                );
+
+                nextCard();
+              }}
+            >
+              <span>↻</span>
+              Need Practice
+            </button>
+
+            <button
+              type="button"
+              className="mastered-button"
+              onClick={() => {
+                setMasteredCount(
+                  (count) => count + 1
+                );
+
+                nextCard();
+              }}
+            >
+              <span>✓</span>
+              I Know This
+            </button>
+
+          </div>
+
         )}
 
         {error && (
@@ -1616,7 +2177,7 @@ function StudyMode() {
 
         <Link
           to="/decks"
-          className="secondary-button"
+          className="secondary-button back-decks-button"
         >
           Back to Decks
         </Link>

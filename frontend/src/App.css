@@ -1668,3 +1668,305 @@
   }
 
 }
+/* =================================
+   STUDY SESSION UI
+   ================================= */
+
+.study-session-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22px;
+}
+
+.study-label {
+  display: block;
+  margin-bottom: 6px;
+  color: #2563eb;
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 1px;
+}
+
+.study-session-header h1 {
+  margin: 0;
+  color: #111827;
+  font-size: 24px;
+  font-weight: 750;
+}
+
+.question-number {
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+  color: #2563eb;
+  font-size: 28px;
+  font-weight: 800;
+}
+
+.question-number span {
+  color: #9ca3af;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+/* =================================
+   STUDY PROGRESS
+   ================================= */
+
+.study-progress-container {
+  margin-bottom: 22px;
+}
+
+.study-progress-bar {
+  width: 100%;
+  height: 9px;
+  overflow: hidden;
+  background: #e5e7eb;
+  border-radius: 20px;
+}
+
+.study-progress-fill {
+  height: 100%;
+  background: #2563eb;
+  border-radius: 20px;
+  transition: width 0.3s ease;
+}
+
+.study-progress-text {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 7px;
+  color: #6b7280;
+  font-size: 12px;
+}
+
+/* =================================
+   SESSION STATS
+   ================================= */
+
+.session-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.session-stat {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 15px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+}
+
+.stat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 30px;
+  height: 30px;
+
+  border-radius: 50%;
+
+  background: #dcfce7;
+  color: #15803d;
+
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.stat-icon.practice {
+  background: #ffedd5;
+  color: #c2410c;
+}
+
+.stat-icon.remaining {
+  background: #e0e7ff;
+  color: #4338ca;
+}
+
+.session-stat small {
+  display: block;
+  margin-bottom: 2px;
+  color: #6b7280;
+  font-size: 11px;
+}
+
+.session-stat strong {
+  color: #111827;
+  font-size: 17px;
+}
+
+/* =================================
+   QUESTION CARD
+   ================================= */
+
+.question-label,
+.answer-label {
+  display: block;
+  margin-bottom: 12px;
+  color: #9ca3af;
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.8px;
+}
+
+.question-text {
+  font-size: 20px;
+  line-height: 1.6;
+}
+
+.answer {
+  margin-top: 24px;
+  padding: 18px 20px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 10px;
+}
+
+.answer-label {
+  color: #15803d;
+  margin-bottom: 7px;
+}
+
+.answer p {
+  margin: 0;
+  color: #166534;
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+/* =================================
+   STUDY ACTIONS
+   ================================= */
+
+.study-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.practice-button,
+.mastered-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  padding: 13px 18px;
+
+  border-radius: 9px;
+
+  font-size: 14px;
+  font-weight: 650;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.practice-button {
+  background: #fff7ed;
+  color: #c2410c;
+  border: 1px solid #fed7aa;
+}
+
+.practice-button:hover {
+  background: #ffedd5;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(194, 65, 12, 0.1);
+}
+
+.mastered-button {
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+}
+
+.mastered-button:hover {
+  background: #d1fae5;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(4, 120, 87, 0.1);
+}
+
+.practice-button span,
+.mastered-button span {
+  font-size: 17px;
+}
+
+.study-main-button {
+  width: 100%;
+  margin-top: 20px;
+}
+
+.back-decks-button {
+  display: inline-block;
+  margin-top: 18px;
+}
+
+/* =================================
+   SESSION RESULT
+   ================================= */
+
+.session-result {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin: 25px 0;
+}
+
+.result-item {
+  padding: 18px;
+  text-align: center;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+}
+
+.result-item span {
+  display: block;
+  margin-bottom: 6px;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.result-item strong {
+  color: #111827;
+  font-size: 28px;
+}
+
+/* =================================
+   STUDY RESPONSIVE
+   ================================= */
+
+@media (max-width: 600px) {
+
+  .study-session-header h1 {
+    font-size: 20px;
+  }
+
+  .question-number {
+    font-size: 23px;
+  }
+
+  .session-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .study-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .session-result {
+    grid-template-columns: 1fr;
+  }
+
+}
