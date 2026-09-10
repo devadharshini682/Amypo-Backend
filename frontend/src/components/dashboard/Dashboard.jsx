@@ -234,6 +234,234 @@
 // }
 
 // export default Dashboard;
+// import React, { useEffect, useState } from "react";
+// import { Link } from "react-router-dom";
+// import api from "../../services/api";
+
+// function Dashboard() {
+//   const [stats, setStats] = useState({
+//     totalDecks: 0,
+//     totalFlashcards: 0,
+//     masteredCards: 0,
+//     dueCards: 0,
+//     streak: 0,
+//     progressPercentage: 0,
+//   });
+
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState("");
+
+//   useEffect(() => {
+//     const loadDashboard = async () => {
+//       setLoading(true);
+//       setError("");
+
+//       try {
+//         // --------------------------------
+//         // 1. LOAD TOTAL DECKS
+//         // --------------------------------
+//         let totalDecks = 0;
+
+//         try {
+//           const decksResponse = await api.get("/decks");
+
+//           console.log("Dashboard - Decks:", decksResponse.data);
+
+//           const decksData = Array.isArray(decksResponse.data)
+//             ? decksResponse.data
+//             : decksResponse.data?.decks || [];
+
+//           totalDecks = decksData.length;
+//         } catch (err) {
+//           console.error("Failed to load decks:", err);
+//         }
+
+//         // --------------------------------
+//         // 2. LOAD PROGRESS
+//         // --------------------------------
+//         let totalFlashcards = 0;
+//         let masteredCards = 0;
+//         let progressPercentage = 0;
+
+//         try {
+//           const progressResponse = await api.get("/analytics/progress");
+
+//           console.log(
+//             "Dashboard - Progress:",
+//             progressResponse.data
+//           );
+
+//           const progressData = progressResponse.data || {};
+
+//           totalFlashcards = progressData.totalCards ?? 0;
+//           masteredCards = progressData.masteredCards ?? 0;
+//           progressPercentage =
+//             progressData.progressPercentage ?? 0;
+//         } catch (err) {
+//           console.error("Failed to load progress:", err);
+//         }
+
+//         // --------------------------------
+//         // 3. LOAD DUE CARDS
+//         // --------------------------------
+//         let dueCards = 0;
+
+//         try {
+//           // Current logged-in user: disha
+//           // Database user ID: 10
+//           const userId = 10;
+
+//           const dueResponse = await api.get(
+//             `/study/due?userId=${userId}`
+//           );
+
+//           console.log(
+//             "Dashboard - Due cards:",
+//             dueResponse.data
+//           );
+
+//           if (Array.isArray(dueResponse.data)) {
+//             dueCards = dueResponse.data.length;
+//           } else if (
+//             Array.isArray(dueResponse.data?.cards)
+//           ) {
+//             dueCards = dueResponse.data.cards.length;
+//           } else if (
+//             typeof dueResponse.data?.count === "number"
+//           ) {
+//             dueCards = dueResponse.data.count;
+//           }
+//         } catch (err) {
+//           console.error(
+//             "Failed to load due cards:",
+//             err
+//           );
+
+//           dueCards = 0;
+//         }
+
+//         // --------------------------------
+//         // 4. UPDATE DASHBOARD
+//         // --------------------------------
+//         setStats({
+//           totalDecks,
+//           totalFlashcards,
+//           masteredCards,
+//           dueCards,
+//           streak: 0,
+//           progressPercentage,
+//         });
+//       } catch (err) {
+//         console.error("Dashboard error:", err);
+
+//         setError(
+//           "Unable to load dashboard data."
+//         );
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     loadDashboard();
+//   }, []);
+
+//   // --------------------------------
+//   // LOADING SCREEN
+//   // --------------------------------
+//   if (loading) {
+//     return (
+//       <div className="page-container">
+//         <h1>Loading dashboard...</h1>
+//       </div>
+//     );
+//   }
+
+//   // --------------------------------
+//   // DASHBOARD UI
+//   // --------------------------------
+//   return (
+//     <div className="page-container">
+
+//       {/* HEADER */}
+//       <div className="page-header">
+//         <div>
+//           <h1>Hello, User!</h1>
+
+//           <p>
+//             Welcome back to your language journey.
+//           </p>
+//         </div>
+//       </div>
+
+//       {/* ERROR MESSAGE */}
+//       {error && (
+//         <div className="error-message">
+//           {error}
+//         </div>
+//       )}
+
+//       {/* STUDY CARD */}
+//       <div className="study-card">
+//         <h2>Ready to study?</h2>
+
+//         <p>
+//           You have{" "}
+//           <strong>{stats.dueCards}</strong>{" "}
+//           cards waiting for review.
+//         </p>
+
+//         <Link
+//           to="/study"
+//           className="primary-button"
+//         >
+//           Start Session
+//         </Link>
+//       </div>
+
+//       {/* STAT CARDS */}
+//       <div className="stats-grid">
+
+//         <div className="stat-card">
+//           <h3>Total Decks</h3>
+//           <p>{stats.totalDecks}</p>
+//         </div>
+
+//         <div className="stat-card">
+//           <h3>Total Flashcards</h3>
+//           <p>{stats.totalFlashcards}</p>
+//         </div>
+
+//         <div className="stat-card">
+//           <h3>Mastered Cards</h3>
+//           <p>{stats.masteredCards}</p>
+//         </div>
+
+//         <div className="stat-card">
+//           <h3>Due Cards</h3>
+//           <p>{stats.dueCards}</p>
+//         </div>
+
+//         <div className="stat-card">
+//           <h3>Streak</h3>
+//           <p>{stats.streak}</p>
+//         </div>
+
+//       </div>
+
+//       {/* PROGRESS */}
+//       <div className="progress-section">
+//         <h3>Learning Progress</h3>
+
+//         <p>
+//           {stats.progressPercentage}% completed
+//         </p>
+//       </div>
+
+//     </div>
+//   );
+// }
+
+// export default Dashboard;
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../../services/api";
@@ -265,15 +493,22 @@ function Dashboard() {
         try {
           const decksResponse = await api.get("/decks");
 
-          console.log("Dashboard - Decks:", decksResponse.data);
+          console.log(
+            "Dashboard - Decks:",
+            decksResponse.data
+          );
 
-          const decksData = Array.isArray(decksResponse.data)
-            ? decksResponse.data
-            : decksResponse.data?.decks || [];
+          const decksData =
+            Array.isArray(decksResponse.data)
+              ? decksResponse.data
+              : decksResponse.data?.decks || [];
 
           totalDecks = decksData.length;
         } catch (err) {
-          console.error("Failed to load decks:", err);
+          console.error(
+            "Failed to load decks:",
+            err
+          );
         }
 
         // --------------------------------
@@ -284,21 +519,30 @@ function Dashboard() {
         let progressPercentage = 0;
 
         try {
-          const progressResponse = await api.get("/analytics/progress");
+          const progressResponse =
+            await api.get("/analytics/progress");
 
           console.log(
             "Dashboard - Progress:",
             progressResponse.data
           );
 
-          const progressData = progressResponse.data || {};
+          const progressData =
+            progressResponse.data || {};
 
-          totalFlashcards = progressData.totalCards ?? 0;
-          masteredCards = progressData.masteredCards ?? 0;
+          totalFlashcards =
+            progressData.totalCards ?? 0;
+
+          masteredCards =
+            progressData.masteredCards ?? 0;
+
           progressPercentage =
             progressData.progressPercentage ?? 0;
         } catch (err) {
-          console.error("Failed to load progress:", err);
+          console.error(
+            "Failed to load progress:",
+            err
+          );
         }
 
         // --------------------------------
@@ -307,8 +551,7 @@ function Dashboard() {
         let dueCards = 0;
 
         try {
-          // Current logged-in user: disha
-          // Database user ID: 10
+          // Keep the existing dashboard API logic unchanged.
           const userId = 10;
 
           const dueResponse = await api.get(
@@ -320,16 +563,24 @@ function Dashboard() {
             dueResponse.data
           );
 
-          if (Array.isArray(dueResponse.data)) {
-            dueCards = dueResponse.data.length;
-          } else if (
-            Array.isArray(dueResponse.data?.cards)
+          if (
+            Array.isArray(dueResponse.data)
           ) {
-            dueCards = dueResponse.data.cards.length;
+            dueCards =
+              dueResponse.data.length;
           } else if (
-            typeof dueResponse.data?.count === "number"
+            Array.isArray(
+              dueResponse.data?.cards
+            )
           ) {
-            dueCards = dueResponse.data.count;
+            dueCards =
+              dueResponse.data.cards.length;
+          } else if (
+            typeof dueResponse.data?.count ===
+            "number"
+          ) {
+            dueCards =
+              dueResponse.data.count;
           }
         } catch (err) {
           console.error(
@@ -352,7 +603,10 @@ function Dashboard() {
           progressPercentage,
         });
       } catch (err) {
-        console.error("Dashboard error:", err);
+        console.error(
+          "Dashboard error:",
+          err
+        );
 
         setError(
           "Unable to load dashboard data."
@@ -370,8 +624,14 @@ function Dashboard() {
   // --------------------------------
   if (loading) {
     return (
-      <div className="page-container">
-        <h1>Loading dashboard...</h1>
+      <div className="page-container dashboard-page">
+        <div className="dashboard-loading">
+          <div className="loading-spinner"></div>
+          <h1>Loading dashboard...</h1>
+          <p>
+            Preparing your learning overview.
+          </p>
+        </div>
       </div>
     );
   }
@@ -380,82 +640,296 @@ function Dashboard() {
   // DASHBOARD UI
   // --------------------------------
   return (
-    <div className="page-container">
+    <div className="page-container dashboard-page">
 
-      {/* HEADER */}
-      <div className="page-header">
-        <div>
-          <h1>Hello, User!</h1>
+      {/* ================================
+          WELCOME HEADER
+          ================================ */}
+      <section className="dashboard-welcome">
 
-          <p>
-            Welcome back to your language journey.
-          </p>
+        <div className="welcome-content">
+
+          <div className="welcome-icon">
+            👋
+          </div>
+
+          <div>
+            <h1>
+              Hello, User!
+            </h1>
+
+            <p>
+              Welcome back to your
+              language journey.
+            </p>
+          </div>
+
         </div>
-      </div>
 
-      {/* ERROR MESSAGE */}
+        <div className="welcome-badge">
+          <span>📚</span>
+          Keep learning
+        </div>
+
+      </section>
+
+      {/* ================================
+          ERROR MESSAGE
+          ================================ */}
       {error && (
-        <div className="error-message">
+        <div className="error-message dashboard-error">
           {error}
         </div>
       )}
 
-      {/* STUDY CARD */}
-      <div className="study-card">
-        <h2>Ready to study?</h2>
+      {/* ================================
+          READY TO STUDY
+          ================================ */}
+      <section className="study-card">
 
-        <p>
-          You have{" "}
-          <strong>{stats.dueCards}</strong>{" "}
-          cards waiting for review.
-        </p>
+        <div className="study-card-content">
+
+          <div className="study-icon">
+            🎯
+          </div>
+
+          <div className="study-info">
+
+            <span className="section-label">
+              TODAY'S LEARNING
+            </span>
+
+            <h2>
+              Ready to study?
+            </h2>
+
+            <p>
+              You have{" "}
+              <strong>
+                {stats.dueCards}
+              </strong>{" "}
+              cards waiting for review.
+            </p>
+
+          </div>
+
+        </div>
 
         <Link
           to="/study"
-          className="primary-button"
+          className="primary-button study-button"
         >
           Start Session
+          <span className="button-arrow">
+            →
+          </span>
         </Link>
-      </div>
 
-      {/* STAT CARDS */}
-      <div className="stats-grid">
+      </section>
 
-        <div className="stat-card">
-          <h3>Total Decks</h3>
-          <p>{stats.totalDecks}</p>
+      {/* ================================
+          STATISTICS
+          ================================ */}
+      <section className="dashboard-stats">
+
+        <div className="section-heading">
+          <div>
+            <h2>
+              Your Progress
+            </h2>
+
+            <p>
+              A quick overview of your
+              learning activity.
+            </p>
+          </div>
         </div>
 
-        <div className="stat-card">
-          <h3>Total Flashcards</h3>
-          <p>{stats.totalFlashcards}</p>
+        <div className="stats-grid">
+
+          {/* TOTAL DECKS */}
+          <div className="stat-card stat-decks">
+
+            <div className="stat-card-top">
+              <div className="stat-icon">
+                📚
+              </div>
+
+              <span className="stat-label">
+                DECKS
+              </span>
+            </div>
+
+            <p className="stat-number">
+              {stats.totalDecks}
+            </p>
+
+            <p className="stat-description">
+              Total study decks
+            </p>
+
+          </div>
+
+          {/* TOTAL FLASHCARDS */}
+          <div className="stat-card stat-flashcards">
+
+            <div className="stat-card-top">
+              <div className="stat-icon">
+                🗂️
+              </div>
+
+              <span className="stat-label">
+                FLASHCARDS
+              </span>
+            </div>
+
+            <p className="stat-number">
+              {stats.totalFlashcards}
+            </p>
+
+            <p className="stat-description">
+              Cards in your collection
+            </p>
+
+          </div>
+
+          {/* MASTERED */}
+          <div className="stat-card stat-mastered">
+
+            <div className="stat-card-top">
+              <div className="stat-icon">
+                🏆
+              </div>
+
+              <span className="stat-label">
+                MASTERED
+              </span>
+            </div>
+
+            <p className="stat-number">
+              {stats.masteredCards}
+            </p>
+
+            <p className="stat-description">
+              Cards you've mastered
+            </p>
+
+          </div>
+
+          {/* DUE */}
+          <div className="stat-card stat-due">
+
+            <div className="stat-card-top">
+              <div className="stat-icon">
+                ⏰
+              </div>
+
+              <span className="stat-label">
+                DUE
+              </span>
+            </div>
+
+            <p className="stat-number">
+              {stats.dueCards}
+            </p>
+
+            <p className="stat-description">
+              Cards waiting for review
+            </p>
+
+          </div>
+
+          {/* STREAK */}
+          <div className="stat-card stat-streak">
+
+            <div className="stat-card-top">
+              <div className="stat-icon">
+                🔥
+              </div>
+
+              <span className="stat-label">
+                STREAK
+              </span>
+            </div>
+
+            <p className="stat-number">
+              {stats.streak}
+            </p>
+
+            <p className="stat-description">
+              Days of learning
+            </p>
+
+          </div>
+
         </div>
 
-        <div className="stat-card">
-          <h3>Mastered Cards</h3>
-          <p>{stats.masteredCards}</p>
+      </section>
+
+      {/* ================================
+          LEARNING PROGRESS
+          ================================ */}
+      <section className="progress-section">
+
+        <div className="progress-header">
+
+          <div>
+            <span className="section-label">
+              LEARNING GOAL
+            </span>
+
+            <h3>
+              Learning Progress
+            </h3>
+
+            <p>
+              Keep reviewing your cards
+              to improve your progress.
+            </p>
+          </div>
+
+          <div className="progress-percentage">
+            {stats.progressPercentage}%
+          </div>
+
         </div>
 
-        <div className="stat-card">
-          <h3>Due Cards</h3>
-          <p>{stats.dueCards}</p>
+        <div
+          className="progress-bar"
+          role="progressbar"
+          aria-valuenow={
+            stats.progressPercentage
+          }
+          aria-valuemin="0"
+          aria-valuemax="100"
+        >
+          <div
+            className="progress-bar-fill"
+            style={{
+              width: `${Math.min(
+                Math.max(
+                  stats.progressPercentage,
+                  0
+                ),
+                100
+              )}%`,
+            }}
+          ></div>
         </div>
 
-        <div className="stat-card">
-          <h3>Streak</h3>
-          <p>{stats.streak}</p>
+        <div className="progress-footer">
+
+          <span>
+            0% completed
+          </span>
+
+          <span>
+            {stats.progressPercentage}% completed
+          </span>
+
         </div>
 
-      </div>
-
-      {/* PROGRESS */}
-      <div className="progress-section">
-        <h3>Learning Progress</h3>
-
-        <p>
-          {stats.progressPercentage}% completed
-        </p>
-      </div>
+      </section>
 
     </div>
   );
