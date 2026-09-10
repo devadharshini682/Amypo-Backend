@@ -2518,3 +2518,76 @@
   }
 
 }
+.study-list {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.multi-study-card {
+  width: 100%;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: 120px 1fr auto;
+  align-items: center;
+  gap: 24px;
+  padding: 24px 28px;
+}
+
+.study-question-number {
+  font-weight: 600;
+  color: #334155;
+  white-space: nowrap;
+}
+
+.question-section {
+  min-width: 0;
+}
+
+.question-text {
+  margin: 0 0 12px;
+  color: #334155;
+  line-height: 1.5;
+}
+
+.multi-study-card .answer {
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+}
+
+.multi-study-card .study-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.study-bottom-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 0 30px;
+}
+
+@media (max-width: 800px) {
+  .multi-study-card {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .study-question-number {
+    white-space: normal;
+  }
+
+  .multi-study-card .study-actions {
+    justify-content: flex-start;
+  }
+
+  .study-bottom-actions {
+    flex-direction: column;
+  }
+}
