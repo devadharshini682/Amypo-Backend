@@ -2188,6 +2188,462 @@
 // }
 
 // export default StudyMode;
+// import React, {
+//   useEffect,
+//   useState,
+// } from "react";
+// import {
+//   Link,
+//   useSearchParams,
+// } from "react-router-dom";
+// import api from "../../services/api";
+
+// function StudyMode() {
+//   const [searchParams] =
+//     useSearchParams();
+
+//   const deckId =
+//     searchParams.get("deckId");
+
+//   const [cards, setCards] =
+//     useState([]);
+
+//   const [currentIndex, setCurrentIndex] =
+//     useState(0);
+
+//   const [loading, setLoading] =
+//     useState(true);
+
+//   const [error, setError] =
+//     useState("");
+
+//   const [showAnswer, setShowAnswer] =
+//     useState(false);
+
+//   const [sessionCompleted, setSessionCompleted] =
+//     useState(false);
+
+//   // --------------------------------
+//   // LOAD CARDS
+//   // --------------------------------
+
+//   const loadCards = async () => {
+//     setLoading(true);
+//     setError("");
+
+//     try {
+//       let response;
+
+//       if (deckId) {
+//         response = await api.get(
+//           `/flashcards/deck/${deckId}`
+//         );
+//       } else {
+//         const userId = 10;
+
+//         response = await api.get(
+//           `/study/due?userId=${userId}`
+//         );
+//       }
+
+//       console.log(
+//         "Study Mode - Response:",
+//         response.data
+//       );
+
+//       const data = response?.data;
+
+//       let result = [];
+
+//       if (Array.isArray(data)) {
+//         result = data;
+//       } else if (
+//         Array.isArray(data?.cards)
+//       ) {
+//         result = data.cards;
+//       } else if (
+//         Array.isArray(data?.flashcards)
+//       ) {
+//         result = data.flashcards;
+//       } else if (
+//         Array.isArray(data?.items)
+//       ) {
+//         result = data.items;
+//       }
+
+//       /*
+//        * IMPORTANT:
+//        * The study API/test can return:
+//        *
+//        * [
+//        *   {
+//        *     card: {
+//        *       id: 1,
+//        *       frontText: "Q1",
+//        *       backText: "A1"
+//        *     }
+//        *   }
+//        * ]
+//        *
+//        * Convert that into:
+//        *
+//        * [
+//        *   {
+//        *     id: 1,
+//        *     frontText: "Q1",
+//        *     backText: "A1"
+//        *   }
+//        * ]
+//        */
+
+//       result = result.map((item) =>
+//         item?.card
+//           ? item.card
+//           : item
+//       );
+
+//       console.log(
+//         "Study Mode - Cards:",
+//         result
+//       );
+
+//       setCards(result);
+//       setCurrentIndex(0);
+//       setShowAnswer(false);
+//       setSessionCompleted(false);
+
+//     } catch (err) {
+//       console.error(
+//         "Failed to load study cards:",
+//         err
+//       );
+
+//       setCards([]);
+
+//       setError(
+//         "Failed to load study cards."
+//       );
+
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   useEffect(() => {
+//     loadCards();
+
+//     // Reload whenever selected deck changes.
+//     // eslint-disable-next-line react-hooks/exhaustive-deps
+//   }, [deckId]);
+
+//   const currentCard =
+//     cards[currentIndex];
+
+//   // --------------------------------
+//   // COMPLETE STUDY SESSION
+//   // --------------------------------
+
+//   const completeStudySession =
+//     async () => {
+
+//       if (!deckId) {
+//         return;
+//       }
+
+//       try {
+
+//         const user =
+//           JSON.parse(
+//             localStorage.getItem("user") ||
+//               "{}"
+//           );
+
+//         const userId =
+//           user?.id || 10;
+
+//         const score = 100;
+
+//         await api.post(
+//           "/study/complete",
+//           {
+//             userId: userId,
+//             deckId: Number(deckId),
+//             score: score,
+//           }
+//         );
+
+//         setSessionCompleted(true);
+
+//       } catch (err) {
+
+//         console.error(
+//           "Failed to complete study session:",
+//           err
+//         );
+
+//         setError(
+//           "Study completed, but session could not be saved."
+//         );
+//       }
+//     };
+
+//   // --------------------------------
+//   // NEXT CARD
+//   // --------------------------------
+
+//   const nextCard = async () => {
+
+//     if (
+//       currentIndex <
+//       cards.length - 1
+//     ) {
+
+//       setCurrentIndex(
+//         currentIndex + 1
+//       );
+
+//       setShowAnswer(false);
+
+//     } else {
+
+//       await completeStudySession();
+
+//     }
+//   };
+
+//   // --------------------------------
+//   // LOADING
+//   // --------------------------------
+
+//   if (loading) {
+
+//     return (
+//       <div className="study-page">
+
+//         <div className="study-card">
+
+//           Loading...
+
+//         </div>
+
+//       </div>
+//     );
+//   }
+
+//   // --------------------------------
+//   // ERROR
+//   // --------------------------------
+
+//   if (
+//     error &&
+//     !cards.length
+//   ) {
+
+//     return (
+//       <div className="study-page">
+
+//         <div className="study-card">
+
+//           <h1>
+//             Study Mode
+//           </h1>
+
+//           <p>
+//             {error}
+//           </p>
+
+//           <button
+//             type="button"
+//             onClick={loadCards}
+//           >
+//             Retry
+//           </button>
+
+//         </div>
+
+//       </div>
+//     );
+//   }
+
+//   // --------------------------------
+//   // SESSION COMPLETED
+//   // --------------------------------
+
+//   if (sessionCompleted) {
+
+//     return (
+//       <div className="study-page">
+
+//         <div className="study-card">
+
+//           <h1>
+//             Study Completed
+//           </h1>
+
+//           <p>
+//             You have completed all the
+//             flashcards in this deck.
+//           </p>
+
+//           <p>
+//             Study session saved successfully.
+//           </p>
+
+//           <Link
+//             to="/decks"
+//             className="secondary-button"
+//           >
+//             Back to Decks
+//           </Link>
+
+//         </div>
+
+//       </div>
+//     );
+//   }
+
+//   // --------------------------------
+//   // NO CARDS
+//   // --------------------------------
+
+//   if (cards.length === 0) {
+
+//     return (
+//       <div className="study-page">
+
+//         <div className="study-card">
+
+//           <h1>
+//             Study Mode
+//           </h1>
+
+//           <p>
+//             No flashcards are available
+//             for this deck.
+//           </p>
+
+//           <Link
+//             to="/decks"
+//             className="secondary-button"
+//           >
+//             Back to Decks
+//           </Link>
+
+//         </div>
+
+//       </div>
+//     );
+//   }
+
+//   // --------------------------------
+//   // STUDY CARD
+//   // --------------------------------
+
+//   return (
+//     <div className="study-page">
+
+//       <div className="study-card">
+
+//         <div className="study-progress">
+
+//           Question{" "}
+//           {currentIndex + 1}
+//           {" "}of{" "}
+//           {cards.length}
+
+//         </div>
+
+//         <h1>
+//           Q{currentIndex + 1}
+//         </h1>
+
+//         <div className="question-card">
+
+//           <p className="question-text">
+
+//             {currentCard?.frontContent ||
+//               currentCard?.frontText ||
+//               currentCard?.front ||
+//               currentCard?.question ||
+//               currentCard?.source ||
+//               ""}
+
+//           </p>
+
+//           {showAnswer && (
+
+//             <div className="answer">
+
+//               <strong>
+//                 Answer
+//               </strong>
+
+//               <p>
+
+//                 {currentCard?.backContent ||
+//                   currentCard?.backText ||
+//                   currentCard?.back ||
+//                   currentCard?.answer ||
+//                   currentCard?.translation ||
+//                   ""}
+
+//               </p>
+
+//             </div>
+
+//           )}
+
+//         </div>
+
+//         {!showAnswer ? (
+
+//           <button
+//             type="button"
+//             className="primary-button"
+//             onClick={() =>
+//               setShowAnswer(true)
+//             }
+//           >
+//             Show Answer
+//           </button>
+
+//         ) : (
+
+//           <button
+//             type="button"
+//             className="primary-button"
+//             onClick={nextCard}
+//           >
+//             {currentIndex <
+//             cards.length - 1
+//               ? "Next Card"
+//               : "Finish Study"}
+//           </button>
+
+//         )}
+
+//         {error && (
+
+//           <p className="error-message">
+//             {error}
+//           </p>
+
+//         )}
+
+//         <Link
+//           to="/decks"
+//           className="secondary-button"
+//         >
+//           Back to Decks
+//         </Link>
+
+//       </div>
+
+//     </div>
+//   );
+// }
+
+// export default StudyMode;
 import React, {
   useEffect,
   useState,
@@ -2222,10 +2678,6 @@ function StudyMode() {
 
   const [sessionCompleted, setSessionCompleted] =
     useState(false);
-
-  // --------------------------------
-  // LOAD CARDS
-  // --------------------------------
 
   const loadCards = async () => {
     setLoading(true);
@@ -2272,28 +2724,15 @@ function StudyMode() {
       }
 
       /*
-       * IMPORTANT:
-       * The study API/test can return:
+       * Handle API response like:
        *
-       * [
-       *   {
-       *     card: {
-       *       id: 1,
-       *       frontText: "Q1",
-       *       backText: "A1"
-       *     }
-       *   }
-       * ]
-       *
-       * Convert that into:
-       *
-       * [
-       *   {
+       * {
+       *   card: {
        *     id: 1,
        *     frontText: "Q1",
        *     backText: "A1"
        *   }
-       * ]
+       * }
        */
 
       result = result.map((item) =>
@@ -2332,26 +2771,21 @@ function StudyMode() {
   useEffect(() => {
     loadCards();
 
-    // Reload whenever selected deck changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deckId]);
 
   const currentCard =
     cards[currentIndex];
 
-  // --------------------------------
-  // COMPLETE STUDY SESSION
-  // --------------------------------
-
   const completeStudySession =
     async () => {
 
       if (!deckId) {
+        setSessionCompleted(true);
         return;
       }
 
       try {
-
         const user =
           JSON.parse(
             localStorage.getItem("user") ||
@@ -2361,25 +2795,24 @@ function StudyMode() {
         const userId =
           user?.id || 10;
 
-        const score = 100;
-
         await api.post(
           "/study/complete",
           {
             userId: userId,
             deckId: Number(deckId),
-            score: score,
+            score: 100,
           }
         );
 
         setSessionCompleted(true);
 
       } catch (err) {
-
         console.error(
           "Failed to complete study session:",
           err
         );
+
+        setSessionCompleted(true);
 
         setError(
           "Study completed, but session could not be saved."
@@ -2387,17 +2820,12 @@ function StudyMode() {
       }
     };
 
-  // --------------------------------
-  // NEXT CARD
-  // --------------------------------
-
   const nextCard = async () => {
 
     if (
       currentIndex <
       cards.length - 1
     ) {
-
       setCurrentIndex(
         currentIndex + 1
       );
@@ -2405,40 +2833,26 @@ function StudyMode() {
       setShowAnswer(false);
 
     } else {
-
       await completeStudySession();
-
     }
   };
 
-  // --------------------------------
-  // LOADING
-  // --------------------------------
-
   if (loading) {
-
     return (
       <div className="study-page">
 
         <div className="study-card">
-
           Loading...
-
         </div>
 
       </div>
     );
   }
 
-  // --------------------------------
-  // ERROR
-  // --------------------------------
-
   if (
     error &&
     !cards.length
   ) {
-
     return (
       <div className="study-page">
 
@@ -2465,12 +2879,7 @@ function StudyMode() {
     );
   }
 
-  // --------------------------------
-  // SESSION COMPLETED
-  // --------------------------------
-
   if (sessionCompleted) {
-
     return (
       <div className="study-page">
 
@@ -2485,9 +2894,11 @@ function StudyMode() {
             flashcards in this deck.
           </p>
 
-          <p>
-            Study session saved successfully.
-          </p>
+          {error && (
+            <p className="error-message">
+              {error}
+            </p>
+          )}
 
           <Link
             to="/decks"
@@ -2502,12 +2913,7 @@ function StudyMode() {
     );
   }
 
-  // --------------------------------
-  // NO CARDS
-  // --------------------------------
-
   if (cards.length === 0) {
-
     return (
       <div className="study-page">
 
@@ -2535,43 +2941,30 @@ function StudyMode() {
     );
   }
 
-  // --------------------------------
-  // STUDY CARD
-  // --------------------------------
-
   return (
     <div className="study-page">
 
       <div className="study-card">
 
         <div className="study-progress">
-
           Question{" "}
           {currentIndex + 1}
           {" "}of{" "}
           {cards.length}
-
         </div>
-
-        <h1>
-          Q{currentIndex + 1}
-        </h1>
 
         <div className="question-card">
 
           <p className="question-text">
-
             {currentCard?.frontContent ||
               currentCard?.frontText ||
               currentCard?.front ||
               currentCard?.question ||
               currentCard?.source ||
               ""}
-
           </p>
 
           {showAnswer && (
-
             <div className="answer">
 
               <strong>
@@ -2579,24 +2972,20 @@ function StudyMode() {
               </strong>
 
               <p>
-
                 {currentCard?.backContent ||
                   currentCard?.backText ||
                   currentCard?.back ||
                   currentCard?.answer ||
                   currentCard?.translation ||
                   ""}
-
               </p>
 
             </div>
-
           )}
 
         </div>
 
         {!showAnswer ? (
-
           <button
             type="button"
             className="primary-button"
@@ -2606,9 +2995,7 @@ function StudyMode() {
           >
             Show Answer
           </button>
-
         ) : (
-
           <button
             type="button"
             className="primary-button"
@@ -2619,15 +3006,12 @@ function StudyMode() {
               ? "Next Card"
               : "Finish Study"}
           </button>
-
         )}
 
         {error && (
-
           <p className="error-message">
             {error}
           </p>
-
         )}
 
         <Link
